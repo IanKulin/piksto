@@ -1,0 +1,31 @@
+<%
+  const layoutBody = `
+    <div class="card">
+      <h1>Upload an Image</h1>
+
+      ${locals.success ? '<div class="banner banner--success" role="alert">Image uploaded successfully.</div>' : ''}
+      ${locals.error ? `<div class="banner banner--error" role="alert">${locals.error}</div>` : ''}
+
+      <section class="upload-section">
+        <form method="POST" action="/upload/file" enctype="multipart/form-data">
+          <div class="drop-zone" id="drop-zone">
+            <p class="drop-zone__label">Drop an image here</p>
+            <input type="file" accept="image/*" name="image" id="file-input" class="drop-zone__input">
+            <button type="submit" class="btn">Upload File</button>
+          </div>
+        </form>
+      </section>
+
+      <section class="upload-section">
+        <h2>Or fetch from URL</h2>
+        <form method="POST" action="/upload/url">
+          <div class="url-row">
+            <input type="text" name="url" placeholder="https://…" class="url-input">
+            <button type="submit" class="btn">Fetch</button>
+          </div>
+        </form>
+      </section>
+    </div>
+  `;
+%>
+<%- include('layout', { body: layoutBody }) %>
