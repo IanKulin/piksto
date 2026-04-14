@@ -1,0 +1,23 @@
+<%
+  const layoutBody = `
+    <div class="image-detail">
+      <div class="image-detail__actions-top">
+        <a href="/gallery" class="btn btn--secondary">&larr; Back to Gallery</a>
+      </div>
+      <div class="image-detail__frame">
+        <img src="${imageDataUri}" alt="Uploaded image ${id}" style="max-width:100%">
+      </div>
+      <div class="image-detail__meta">
+        <span class="image-detail__id">ID: ${id}</span>
+        <span class="image-detail__date">${created_at}</span>
+      </div>
+      <div class="image-detail__actions">
+        <a href="/image/${id}/download" download class="btn">Download</a>
+        <form method="POST" action="/image/${id}/delete" style="display:inline">
+          <button type="submit" class="btn btn--danger">Delete</button>
+        </form>
+      </div>
+    </div>
+  `;
+%>
+<%- include('layout', { body: layoutBody }) %>
