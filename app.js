@@ -21,6 +21,20 @@ app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 
 const uploadRouter = require('./src/routes/upload');
+const galleryRouter = require('./src/routes/gallery');
 app.use('/', uploadRouter);
+app.use('/', galleryRouter);
+
+// 404 handler
+app.use((_req, res) => {
+  res.status(404).render('error', { message: 'Page not found.' });
+});
+
+// 500 handler
+// eslint-disable-next-line no-unused-vars
+app.use((err, _req, res, _next) => {
+  console.error(err);
+  res.status(500).render('error', { message: 'An unexpected error occurred.' });
+});
 
 module.exports = app;

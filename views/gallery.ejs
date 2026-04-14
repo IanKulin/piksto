@@ -1,0 +1,17 @@
+<%
+  const layoutBody = `
+    <h1 style="margin-bottom:1.5rem">Gallery</h1>
+    ${images.length === 0
+      ? '<p class="gallery-empty">No images yet. <a href="/">Upload one!</a></p>'
+      : `<div class="gallery-grid">
+          ${images.map(img => `
+            <a class="gallery-card" href="/image/${img.id}">
+              <img src="${img.thumbDataUri}" alt="Uploaded image ${img.id}">
+              <span class="gallery-card__date">${img.created_at}</span>
+            </a>
+          `).join('')}
+        </div>`
+    }
+  `;
+%>
+<%- include('layout', { body: layoutBody }) %>
