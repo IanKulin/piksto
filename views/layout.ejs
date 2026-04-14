@@ -11,7 +11,8 @@
   <header class="site-header">
     <span class="site-title">photo-sink</span>
     <nav>
-      <a href="/gallery">Gallery</a>
+      <a href="/" class="nav-link<%= locals.page === 'upload' ? ' nav-link--active' : '' %>">Upload</a>
+      <a href="/gallery" class="nav-link<%= locals.page === 'gallery' ? ' nav-link--active' : '' %>">Gallery</a>
     </nav>
   </header>
   <main>

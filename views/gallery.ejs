@@ -1,6 +1,5 @@
 <%
   const layoutBody = `
-    <h1 style="margin-bottom:1.5rem">Gallery</h1>
     ${images.length === 0
       ? '<p class="gallery-empty">No images yet. <a href="/">Upload one!</a></p>'
       : `<div class="gallery-grid">
@@ -14,4 +13,4 @@
     }
   `;
 %>
-<%- include('layout', { body: layoutBody }) %>
+<%- include('layout', { body: layoutBody, page: 'gallery' }) %>

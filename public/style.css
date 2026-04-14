@@ -80,6 +80,17 @@ a:hover {
   gap: 1rem;
 }
 
+.nav-link {
+  text-decoration: none;
+}
+
+.nav-link--active {
+  text-shadow: 0 0 8px color-mix(in srgb, var(--accent) 60%, transparent);
+}
+
+.nav-link--active::before { content: '['; }
+.nav-link--active::after  { content: ']'; }
+
 /* ── Main ── */
 main {
   flex: 1;
