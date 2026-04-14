@@ -9,12 +9,14 @@ if (!key || key.length !== 64 || !/^[0-9a-fA-F]{64}$/.test(key)) {
 
 const express = require('express');
 const path = require('path');
+const { version } = require('./package.json');
 
 // Initialize database on startup
 require('./src/db');
 
 const app = express();
 
+app.locals.version = version;
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.urlencoded({ extended: false }));
 app.set('view engine', 'ejs');
