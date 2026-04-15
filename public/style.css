@@ -333,6 +333,7 @@ main {
   border-radius: 0.5rem;
   border: 1px solid var(--border);
   display: block;
+  margin: 0 auto;
 }
 
 .image-detail__meta {
