@@ -238,6 +238,12 @@ main {
   background: var(--danger-hover);
 }
 
+.btn:disabled {
+  background: var(--border);
+  color: var(--text-muted);
+  cursor: not-allowed;
+}
+
 /* ── Modal ── */
 .modal-backdrop {
   display: none;
