@@ -7,17 +7,15 @@
 
   const layoutBody = `
     <div class="image-detail">
-      <div class="image-detail__frame">
-        <img src="${imageSrc}" alt="Uploaded image ${id}" style="max-width:100%">
-      </div>
+      <img src="${imageSrc}" alt="Uploaded image ${id}" class="image-detail__img">
     </div>
 
     <div id="confirm-delete" class="modal-backdrop">
       <div class="modal">
-        <p>Delete this image? This cannot be undone.</p>
+        <p class="modal__body">Delete this image? This cannot be undone.</p>
         <div class="modal__actions">
           <a href="#" class="btn">Cancel</a>
-          <form method="POST" action="/image/${id}/delete" style="display:inline-flex">
+          <form method="POST" action="/image/${id}/delete" class="modal__form">
             <button type="submit" class="btn btn--danger">Delete</button>
           </form>
         </div>

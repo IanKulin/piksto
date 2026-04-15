@@ -5,8 +5,8 @@
       : `<div class="gallery-grid">
           ${images.map(img => `
             <a class="gallery-card" href="/image/${img.id}">
-              <img src="/image/${img.id}/thumb.jpg" alt="Uploaded image ${img.id}">
-              <span class="gallery-card__date">${img.created_at}</span>
+              <img src="/image/${img.id}/thumb.jpg" alt="Uploaded image ${img.id}" class="gallery-card__img">
+              <time class="gallery-card__date" datetime="${img.created_at}">${img.created_at}</time>
             </a>
           `).join('')}
         </div>`
