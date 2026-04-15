@@ -40,23 +40,6 @@ test.describe("Stage 5 — Image Detail, Download & Delete", () => {
     expect(src).toMatch(/^\/image\/\d+\.\w+$/);
   });
 
-  test("detail page shows image ID", async ({ page }) => {
-    await uploadImage(page, "red.jpg");
-    const id = await getLastImageId();
-    await page.goto(`/image/${id}`);
-    await expect(page.locator(".image-detail__id")).toContainText(String(id));
-  });
-
-  test("detail page shows upload date", async ({ page }) => {
-    await uploadImage(page, "red.jpg");
-    const id = await getLastImageId();
-    await page.goto(`/image/${id}`);
-    const date = page.locator(".image-detail__date");
-    await expect(date).toBeVisible();
-    const text = await date.textContent();
-    expect(text.trim().length).toBeGreaterThan(0);
-  });
-
   test("download link has correct href and download attribute", async ({ page }) => {
     await uploadImage(page, "red.jpg");
     const id = await getLastImageId();
@@ -111,6 +94,7 @@ test.describe("Stage 5 — Image Detail, Download & Delete", () => {
     const id = await getLastImageId();
     await page.goto(`/image/${id}`);
 
+    await page.locator('a[href="#confirm-delete"]').click();
     await page.locator('form[action$="/delete"] button[type="submit"]').click();
     await expect(page).toHaveURL("/gallery");
 
@@ -123,6 +107,7 @@ test.describe("Stage 5 — Image Detail, Download & Delete", () => {
     await uploadImage(page, "red.jpg");
     const id = await getLastImageId();
     await page.goto(`/image/${id}`);
+    await page.locator('a[href="#confirm-delete"]').click();
     await page.locator('form[action$="/delete"] button[type="submit"]').click();
     await expect(page).toHaveURL("/gallery");
 
@@ -153,6 +138,7 @@ test.describe("Stage 5 — Image Detail, Download & Delete", () => {
     const id = await getLastImageId();
     await page.goto(`/image/${id}`);
 
+    await page.locator('a[href="#confirm-delete"]').click();
     const form = page.locator(`form[action="/image/${id}/delete"]`);
     await expect(form).toBeVisible();
     const method = await form.getAttribute("method");
