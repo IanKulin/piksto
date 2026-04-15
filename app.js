@@ -10,6 +10,7 @@ if (!key || key.length !== 64 || !/^[0-9a-fA-F]{64}$/.test(key)) {
 const express = require("express");
 const path = require("path");
 const { version } = require("./package.json");
+const logger = require("./src/logger");
 
 // Initialize database on startup
 require("./src/db");
@@ -36,7 +37,7 @@ app.use((_req, res) => {
 
 // 500 handler
 app.use((err, _req, res, _next) => {
-  console.error(err);
+  logger.error(err.message || String(err));
   res.status(500).render("error", { message: "An unexpected error occurred." });
 });
 
