@@ -85,6 +85,13 @@ a:hover {
   gap: 1rem;
 }
 
+.header-actions {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+  margin-left: auto;
+}
+
 .nav-link {
   text-decoration: none;
 }
@@ -341,13 +348,6 @@ main {
   font-size: 0.9375rem;
 }
 
-.image-detail__actions {
-  display: flex;
-  gap: 0.75rem;
-  align-items: center;
-  flex-wrap: wrap;
-}
-
 /* ── Responsive ── */
 @media (max-width: 600px) {
   .card {
@@ -361,8 +361,12 @@ main {
     flex-direction: column;
   }
 
-  .image-detail__actions {
-    flex-direction: column;
-    align-items: flex-start;
+  .header-actions {
+    gap: 0.5rem;
+  }
+
+  .header-actions .btn {
+    padding: 0.375rem 0.75rem;
+    font-size: 0.875rem;
   }
 }

@@ -14,6 +14,9 @@
       <a href="/" class="nav-link<%= locals.page === 'upload' ? ' nav-link--active' : '' %>">Upload</a>
       <a href="/gallery" class="nav-link<%= locals.page === 'gallery' ? ' nav-link--active' : '' %>">Gallery</a>
     </nav>
+    <% if (locals.headerActions) { %>
+    <div class="header-actions"><%- locals.headerActions %></div>
+    <% } %>
   </header>
   <main>
     <%- body %>
