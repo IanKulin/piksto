@@ -22,7 +22,7 @@ test.describe('Stage 4 — Gallery Page', () => {
     // Use a fresh in-memory read to check if gallery might be empty;
     // regardless, the empty-state markup must exist in the template.
     // We check by looking at DB state first.
-    const db = new Database(path.join(__dirname, '../../data/photosink.db'), { readonly: true });
+    const db = new Database(process.env.DB_PATH, { readonly: true });
     const count = db.prepare('SELECT COUNT(*) as n FROM images').get().n;
     db.close();
 
@@ -85,7 +85,7 @@ test.describe('Stage 4 — Gallery Page', () => {
     await uploadImage(page, 'blue.webp');
 
     await page.goto('/gallery');
-    const db = new Database(path.join(__dirname, '../../data/photosink.db'), { readonly: true });
+    const db = new Database(process.env.DB_PATH, { readonly: true });
     const totalCount = db.prepare('SELECT COUNT(*) as n FROM images').get().n;
     db.close();
 
@@ -109,7 +109,7 @@ test.describe('Stage 4 — Gallery Page', () => {
     await uploadImage(page, 'red.jpg');
 
     // Corrupt the auth_tag_thumb of the most-recent row
-    const db = new Database(path.join(__dirname, '../../data/photosink.db'));
+    const db = new Database(process.env.DB_PATH);
     const row = db.prepare('SELECT id FROM images ORDER BY id DESC LIMIT 1').get();
     db.prepare('UPDATE images SET auth_tag_thumb = ? WHERE id = ?').run(
       Buffer.alloc(16, 0x00),
@@ -121,7 +121,7 @@ test.describe('Stage 4 — Gallery Page', () => {
     expect(res.status()).toBe(500);
 
     // Restore: delete the corrupted row so other tests aren't affected
-    const db2 = new Database(path.join(__dirname, '../../data/photosink.db'));
+    const db2 = new Database(process.env.DB_PATH);
     db2.prepare('DELETE FROM images WHERE id = ?').run(row.id);
     db2.close();
   });

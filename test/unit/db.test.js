@@ -102,8 +102,8 @@ describe('database module', () => {
     assert.equal(row, undefined);
   });
 
-  test('photosink.db file is created on disk when module is loaded', () => {
-    const dbPath = path.join(__dirname, '../../data/photosink.db');
-    assert.ok(fs.existsSync(dbPath), 'data/photosink.db should exist after module load');
+  test('db file is created on disk when module is loaded', () => {
+    const dbPath = process.env.DB_PATH || path.join(__dirname, '../../data/photosink.db');
+    assert.ok(fs.existsSync(dbPath), 'db file should exist after module load');
   });
 });

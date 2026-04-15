@@ -3,7 +3,7 @@ const path = require('path');
 const Database = require('better-sqlite3');
 
 const FIXTURES = path.join(__dirname, '../fixtures');
-const DB_PATH = path.join(__dirname, '../../data/photosink.db');
+const DB_PATH = process.env.DB_PATH;
 
 async function uploadImage(page, filename) {
   await page.goto('/');

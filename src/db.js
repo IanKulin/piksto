@@ -7,7 +7,8 @@ if (!fs.existsSync(dbDir)) {
   fs.mkdirSync(dbDir, { recursive: true });
 }
 
-const db = new Database(path.join(dbDir, 'photosink.db'));
+const dbPath = process.env.DB_PATH || path.join(dbDir, 'photosink.db');
+const db = new Database(dbPath);
 
 db.exec(`
   CREATE TABLE IF NOT EXISTS images (

@@ -11,14 +11,14 @@ test.describe('Stage 1 — Project Scaffold & Server Startup', () => {
     expect(res.status()).not.toBe(0);
   });
 
-  test('data/photosink.db file exists on disk', () => {
-    const dbPath = path.join(__dirname, '../../data/photosink.db');
+  test('db file exists on disk', () => {
+    const dbPath = process.env.DB_PATH || path.join(__dirname, '../../data/photosink.db');
     expect(fs.existsSync(dbPath)).toBe(true);
   });
 
-  test('photosink.db contains the images table with correct schema', () => {
+  test('db contains the images table with correct schema', () => {
     const Database = require('better-sqlite3');
-    const dbPath = path.join(__dirname, '../../data/photosink.db');
+    const dbPath = process.env.DB_PATH || path.join(__dirname, '../../data/photosink.db');
     const db = new Database(dbPath, { readonly: true });
 
     const cols = db.pragma('table_info(images)').map(c => c.name);

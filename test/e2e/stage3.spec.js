@@ -67,7 +67,7 @@ test.describe('Stage 3 — File Upload & Encryption Pipeline', () => {
       await page.locator('form[action="/upload/file"] button[type="submit"]').click();
       await page.waitForURL('/?success=1');
 
-      const db = new Database(path.join(__dirname, '../../data/photosink.db'), { readonly: true });
+      const db = new Database(process.env.DB_PATH, { readonly: true });
       const row = db.prepare('SELECT * FROM images ORDER BY id DESC LIMIT 1').get();
       db.close();
 
@@ -87,7 +87,7 @@ test.describe('Stage 3 — File Upload & Encryption Pipeline', () => {
       await page.locator('form[action="/upload/file"] button[type="submit"]').click();
       await page.waitForURL('/?success=1');
 
-      const db = new Database(path.join(__dirname, '../../data/photosink.db'), { readonly: true });
+      const db = new Database(process.env.DB_PATH, { readonly: true });
       const row = db.prepare('SELECT * FROM images ORDER BY id DESC LIMIT 1').get();
       db.close();
 
