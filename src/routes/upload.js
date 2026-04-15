@@ -1,8 +1,7 @@
 const express = require("express");
 const multer = require("multer");
-const { encrypt } = require("../crypto");
 const { generateThumbnail } = require("../thumbnail");
-const { stmts } = require("../db");
+const { insertImage } = require("../db");
 const logger = require("../logger");
 
 const router = express.Router();
@@ -55,18 +54,7 @@ router.post("/upload/file", (req, res) => {
 
     try {
       const thumbBuffer = await generateThumbnail(req.file.buffer);
-      const encImage = encrypt(req.file.buffer);
-      const encThumb = encrypt(thumbBuffer);
-
-      stmts.insert.run({
-        mime_type: req.file.mimetype,
-        iv_image: encImage.iv,
-        image_data: encImage.ciphertext,
-        auth_tag_image: encImage.authTag,
-        iv_thumb: encThumb.iv,
-        thumb_data: encThumb.ciphertext,
-        auth_tag_thumb: encThumb.authTag,
-      });
+      insertImage(req.file.mimetype, req.file.buffer, thumbBuffer);
 
       logger.info("File uploaded successfully (%s)", req.file.mimetype);
       return res.redirect("/?success=1");
@@ -129,18 +117,7 @@ router.post("/upload/url", async (req, res) => {
     const imageBuffer = Buffer.concat(chunks.map((c) => Buffer.from(c)));
 
     const thumbBuffer = await generateThumbnail(imageBuffer);
-    const encImage = encrypt(imageBuffer);
-    const encThumb = encrypt(thumbBuffer);
-
-    stmts.insert.run({
-      mime_type: mime,
-      iv_image: encImage.iv,
-      image_data: encImage.ciphertext,
-      auth_tag_image: encImage.authTag,
-      iv_thumb: encThumb.iv,
-      thumb_data: encThumb.ciphertext,
-      auth_tag_thumb: encThumb.authTag,
-    });
+    insertImage(mime, imageBuffer, thumbBuffer);
 
     logger.info("URL upload succeeded (%s)", mime);
     return res.redirect("/?success=1");

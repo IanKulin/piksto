@@ -1,6 +1,7 @@
 const Database = require("better-sqlite3");
 const path = require("path");
 const fs = require("fs");
+const { encrypt, decrypt } = require("./crypto");
 
 const dbDir = path.join(__dirname, "..", "data");
 if (!fs.existsSync(dbDir)) {
@@ -35,4 +36,40 @@ const stmts = {
   deleteById: db.prepare("DELETE FROM images WHERE id = ?"),
 };
 
-module.exports = { db, stmts };
+function insertImage(mime, imageBuffer, thumbBuffer) {
+  const encImage = encrypt(imageBuffer);
+  const encThumb = encrypt(thumbBuffer);
+  return stmts.insert.run({
+    mime_type: mime,
+    iv_image: encImage.iv,
+    image_data: encImage.ciphertext,
+    auth_tag_image: encImage.authTag,
+    iv_thumb: encThumb.iv,
+    thumb_data: encThumb.ciphertext,
+    auth_tag_thumb: encThumb.authTag,
+  });
+}
+
+function getDecryptedImage(id) {
+  const row = stmts.getById.get(id);
+  if (!row) return null;
+  const imageBuffer = decrypt({
+    iv: row.iv_image,
+    ciphertext: row.image_data,
+    authTag: row.auth_tag_image,
+  });
+  return { id: row.id, mime_type: row.mime_type, created_at: row.created_at, imageBuffer };
+}
+
+function getDecryptedThumb(id) {
+  const row = stmts.getById.get(id);
+  if (!row) return null;
+  const thumbBuffer = decrypt({
+    iv: row.iv_thumb,
+    ciphertext: row.thumb_data,
+    authTag: row.auth_tag_thumb,
+  });
+  return { id: row.id, mime_type: row.mime_type, created_at: row.created_at, thumbBuffer };
+}
+
+module.exports = { db, stmts, insertImage, getDecryptedImage, getDecryptedThumb };
