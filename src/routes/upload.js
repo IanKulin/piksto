@@ -1,7 +1,6 @@
 const express = require("express");
 const multer = require("multer");
-const { generateThumbnail } = require("../thumbnail");
-const { saveImage } = require("../imageService");
+const { storeUpload } = require("../imageService");
 const logger = require("../logger");
 
 const router = express.Router();
@@ -53,8 +52,7 @@ router.post("/upload/file", (req, res) => {
     }
 
     try {
-      const thumbBuffer = await generateThumbnail(req.file.buffer);
-      saveImage(req.file.mimetype, req.file.buffer, thumbBuffer);
+      await storeUpload(req.file.buffer, req.file.mimetype);
 
       logger.info("File uploaded successfully (%s)", req.file.mimetype);
       return res.redirect("/?success=1");
@@ -116,8 +114,7 @@ router.post("/upload/url", async (req, res) => {
 
     const imageBuffer = Buffer.concat(chunks.map((c) => Buffer.from(c)));
 
-    const thumbBuffer = await generateThumbnail(imageBuffer);
-    saveImage(mime, imageBuffer, thumbBuffer);
+    await storeUpload(imageBuffer, mime);
 
     logger.info("URL upload succeeded (%s)", mime);
     return res.redirect("/?success=1");

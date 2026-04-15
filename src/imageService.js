@@ -1,5 +1,6 @@
 const { encrypt, decrypt } = require("./crypto");
 const { stmts, insertRaw } = require("./db");
+const { generateThumbnail } = require("./thumbnail");
 
 function saveImage(mime, imageBuffer, thumbBuffer) {
   const encImage = encrypt(imageBuffer);
@@ -29,4 +30,9 @@ function getThumb(id) {
   return { id: row.id, mime_type: row.mime_type, created_at: row.created_at, thumbBuffer };
 }
 
-module.exports = { saveImage, getImage, getThumb };
+async function storeUpload(imageBuffer, mimeType) {
+  const thumbBuffer = await generateThumbnail(imageBuffer);
+  return saveImage(mimeType, imageBuffer, thumbBuffer);
+}
+
+module.exports = { saveImage, getImage, getThumb, storeUpload };

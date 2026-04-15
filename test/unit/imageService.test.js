@@ -7,7 +7,7 @@ process.env.ENCRYPTION_KEY = "a".repeat(64);
 // Point db at an in-memory database for isolation
 process.env.DB_PATH = ":memory:";
 
-const { saveImage, getImage, getThumb } = require("../../src/imageService");
+const { saveImage, getImage, getThumb, storeUpload } = require("../../src/imageService");
 const { stmts } = require("../../src/db");
 
 describe("imageService", () => {
@@ -64,5 +64,42 @@ describe("imageService", () => {
   test("getThumb returns null for unknown id", () => {
     const result = getThumb(999999);
     assert.equal(result, null);
+  });
+});
+
+describe("storeUpload", () => {
+  test("returns a result with a valid lastInsertRowid", async () => {
+    const imageBuffer = Buffer.from(
+      "/9j/4AAQSkZJRgABAQEASABIAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC4nICIsIxwcKDcpLDAxNDQ0Hyc5PTgyPC4zNDL/2wBDAQkJCQwLDBgNDRgyIRwhMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjL/wAARCAABAAEDASIAAhEBAxEB/8QAFAABAAAAAAAAAAAAAAAAAAAACf/EABQQAQAAAAAAAAAAAAAAAAAAAAD/xAAUAQEAAAAAAAAAAAAAAAAAAAAA/8QAFBEBAAAAAAAAAAAAAAAAAAAAAP/aAAwDAQACEQMRAD8AJQAB/9k=",
+      "base64"
+    );
+    const result = await storeUpload(imageBuffer, "image/jpeg");
+    assert.ok(result.lastInsertRowid > 0);
+  });
+
+  test("stored image can be retrieved via getImage and round-trips correctly", async () => {
+    const imageBuffer = Buffer.from(
+      "/9j/4AAQSkZJRgABAQEASABIAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC4nICIsIxwcKDcpLDAxNDQ0Hyc5PTgyPC4zNDL/2wBDAQkJCQwLDBgNDRgyIRwhMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjL/wAARCAABAAEDASIAAhEBAxEB/8QAFAABAAAAAAAAAAAAAAAAAAAACf/EABQQAQAAAAAAAAAAAAAAAAAAAAD/xAAUAQEAAAAAAAAAAAAAAAAAAAAA/8QAFBEBAAAAAAAAAAAAAAAAAAAAAP/aAAwDAQACEQMRAD8AJQAB/9k=",
+      "base64"
+    );
+    const result = await storeUpload(imageBuffer, "image/jpeg");
+    const retrieved = getImage(result.lastInsertRowid);
+    assert.ok(retrieved !== null);
+    assert.equal(retrieved.mime_type, "image/jpeg");
+    assert.deepEqual(retrieved.imageBuffer, imageBuffer);
+  });
+
+  test("stored thumbnail can be retrieved via getThumb and is a valid JPEG buffer", async () => {
+    const imageBuffer = Buffer.from(
+      "/9j/4AAQSkZJRgABAQEASABIAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC4nICIsIxwcKDcpLDAxNDQ0Hyc5PTgyPC4zNDL/2wBDAQkJCQwLDBgNDRgyIRwhMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjL/wAARCAABAAEDASIAAhEBAxEB/8QAFAABAAAAAAAAAAAAAAAAAAAACf/EABQQAQAAAAAAAAAAAAAAAAAAAAD/xAAUAQEAAAAAAAAAAAAAAAAAAAAA/8QAFBEBAAAAAAAAAAAAAAAAAAAAAP/aAAwDAQACEQMRAD8AJQAB/9k=",
+      "base64"
+    );
+    const result = await storeUpload(imageBuffer, "image/jpeg");
+    const retrieved = getThumb(result.lastInsertRowid);
+    assert.ok(retrieved !== null);
+    // JPEG magic bytes: FF D8 FF
+    assert.equal(retrieved.thumbBuffer[0], 0xff);
+    assert.equal(retrieved.thumbBuffer[1], 0xd8);
+    assert.equal(retrieved.thumbBuffer[2], 0xff);
   });
 });
