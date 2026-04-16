@@ -17,8 +17,13 @@
       <a href="/" class="nav-link<%= locals.page === 'upload' ? ' nav-link--active' : '' %>">Upload</a>
       <a href="/gallery" class="nav-link<%= locals.page === 'gallery' ? ' nav-link--active' : '' %>">Gallery</a>
     </nav>
-    <% if (locals.actionsPartial) { %>
-    <div class="header-actions"><%- include(locals.actionsPartial) %></div>
-    <% } %>
+    <div class="header-actions">
+      <% if (locals.actionsPartial) { %><%- include(locals.actionsPartial) %><% } %>
+      <% if (locals.user) { %>
+      <form method="POST" action="/logout" style="display:inline">
+        <button type="submit" class="btn btn--small">Sign out</button>
+      </form>
+      <% } %>
+    </div>
   </header>
-  <main>
+  <main<% if (locals.mainClass) { %> class="<%= locals.mainClass %>"<% } %>>

@@ -68,4 +68,16 @@ const testHelpers = {
   getRawById: (id) => stmts.getById.get(id),
 };
 
-module.exports = { insertRaw, deleteManyById, getAllImages, getById, deleteById, testHelpers };
+function closeDb() {
+  db.close();
+}
+
+module.exports = {
+  insertRaw,
+  deleteManyById,
+  getAllImages,
+  getById,
+  deleteById,
+  testHelpers,
+  closeDb,
+};

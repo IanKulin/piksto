@@ -1,6 +1,6 @@
 const app = require("./app");
 const logger = require("./src/logger");
-const { db } = require("./src/db");
+const { closeDb } = require("./src/db");
 
 const port = process.env.PORT || 3000;
 
@@ -12,7 +12,7 @@ logger.ready.then(() => {
   function shutdown(signal) {
     logger.info("received %s, shutting down", signal);
     server.close(() => {
-      db.close();
+      closeDb();
       logger.info("shutdown complete");
       process.exit(0);
     });

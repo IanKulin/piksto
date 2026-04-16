@@ -5,8 +5,15 @@ if (!key || key.length !== 64 || !/^[0-9a-fA-F]{64}$/.test(key)) {
   process.exit(1);
 }
 
+const sessionSecret = process.env.SESSION_SECRET;
+if (!sessionSecret) {
+  console.error("ERROR: SESSION_SECRET must be set.");
+  process.exit(1);
+}
+
 const express = require("express");
 const path = require("path");
+const session = require("express-session");
 const { version } = require("./package.json");
 const logger = require("./src/logger");
 
@@ -21,12 +28,25 @@ app.use(express.urlencoded({ extended: false }));
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
 
+app.use(
+  session({
+    secret: sessionSecret,
+    resave: false,
+    saveUninitialized: false,
+    cookie: { httpOnly: true, sameSite: "lax" },
+  })
+);
+
+const authRouter = require("./src/routes/auth");
+const requireAuth = require("./src/middleware/requireAuth");
 const uploadRouter = require("./src/routes/upload");
 const galleryRouter = require("./src/routes/gallery");
 const imageRouter = require("./src/routes/image");
-app.use("/", uploadRouter);
-app.use("/gallery", galleryRouter);
-app.use("/image", imageRouter);
+
+app.use("/", authRouter);
+app.use("/", requireAuth, uploadRouter);
+app.use("/gallery", requireAuth, galleryRouter);
+app.use("/image", requireAuth, imageRouter);
 
 // 404 handler
 app.use((_req, res) => {

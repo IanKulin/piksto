@@ -101,6 +101,12 @@ main {
   padding: 2rem 1rem;
 }
 
+.main--centered {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 /* ── Footer ── */
 .site-footer {
   background: var(--surface);
@@ -211,6 +217,50 @@ main {
   outline-offset: 1px;
 }
 
+/* ── Login form ── */
+.login-card {
+  max-width: 380px;
+  width: 100%;
+}
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.form-label {
+  font-size: var(--font-sm);
+  font-weight: 500;
+}
+
+.form-input {
+  padding: 0.625rem 0.75rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--bg);
+  color: var(--text);
+  font-size: var(--font-base);
+  width: 100%;
+}
+
+.form-input:focus {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+
+.login-btn {
+  width: 100%;
+  padding: 0.625rem 1.25rem;
+  justify-content: center;
+}
+
 /* ── Buttons ── */
 .btn {
   display: inline-block;
@@ -228,6 +278,11 @@ main {
 
 .btn:hover {
   background: var(--accent-hover);
+}
+
+.btn--small {
+  padding: 0.3rem 0.75rem;
+  font-size: var(--font-sm);
 }
 
 .btn--danger {
