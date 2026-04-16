@@ -1,5 +1,5 @@
-const { test, describe } = require("node:test");
-const assert = require("node:assert/strict");
+import { test, describe } from "node:test";
+import assert from "node:assert/strict";
 
 // Set up encryption key before requiring modules that depend on it
 process.env.ENCRYPTION_KEY = "a".repeat(64);
@@ -7,8 +7,8 @@ process.env.ENCRYPTION_KEY = "a".repeat(64);
 // Point db at an in-memory database for isolation
 process.env.DB_PATH = ":memory:";
 
-const { saveImage, getImage, getThumb, storeUpload } = require("../../src/imageService");
-const { testHelpers } = require("../../src/db");
+const { saveImage, getImage, getThumb, storeUpload } = await import("../../src/imageService.js");
+const { testHelpers } = await import("../../src/db.js");
 
 describe("imageService", () => {
   test("saveImage encrypts data before storing", () => {

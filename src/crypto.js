@@ -1,4 +1,4 @@
-const crypto = require("crypto");
+import crypto from "crypto";
 
 function getKey() {
   const hex = process.env.ENCRYPTION_KEY;
@@ -24,4 +24,4 @@ function decrypt({ iv, ciphertext, authTag }) {
   return Buffer.concat([decipher.update(ciphertext), decipher.final()]);
 }
 
-module.exports = { encrypt, decrypt };
+export { encrypt, decrypt };

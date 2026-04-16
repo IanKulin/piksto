@@ -1,8 +1,11 @@
-const { test, describe, before, after } = require("node:test");
-const assert = require("node:assert/strict");
-const path = require("path");
-const fs = require("fs");
-const Database = require("better-sqlite3");
+import { test, describe, before, after } from "node:test";
+import assert from "node:assert/strict";
+import path from "path";
+import fs from "fs";
+import Database from "better-sqlite3";
+import { fileURLToPath } from "url";
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 // Use a separate in-memory DB for unit tests so we don't touch the real file
 describe("database module", () => {
@@ -107,8 +110,8 @@ describe("database module", () => {
     assert.equal(row, undefined);
   });
 
-  test("db file is created on disk when module is loaded", () => {
-    require("../../src/db");
+  test("db file is created on disk when module is loaded", async () => {
+    await import("../../src/db.js");
     const dbPath = process.env.DB_PATH || path.join(__dirname, "../../data/photosink.db");
     assert.ok(fs.existsSync(dbPath), "db file should exist after module load");
   });

@@ -1,4 +1,4 @@
-const { test, expect } = require("@playwright/test");
+import { test, expect } from "@playwright/test";
 
 test.describe("Stage 2 — Upload Page (UI Shell)", () => {
   test("GET / renders the upload page", async ({ page }) => {

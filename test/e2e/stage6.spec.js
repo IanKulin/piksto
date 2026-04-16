@@ -1,7 +1,9 @@
-const { test, expect } = require("@playwright/test");
-const path = require("path");
-const fs = require("fs");
+import { test, expect } from "@playwright/test";
+import path from "path";
+import fs from "fs";
+import { fileURLToPath } from "url";
 
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const FIXTURES = path.join(__dirname, "../fixtures");
 
 // Helper: read fixture file as a byte array for DataTransfer injection

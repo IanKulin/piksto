@@ -1,6 +1,6 @@
-const app = require("./app");
-const logger = require("./src/logger");
-const { closeDb } = require("./src/db");
+import app from "./app.js";
+import logger from "./src/logger.js";
+import { closeDb } from "./src/db.js";
 
 const port = process.env.PORT || 3000;
 

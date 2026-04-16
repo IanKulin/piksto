@@ -1,6 +1,7 @@
-const express = require("express");
-const { getAllImages, deleteManyById } = require("../db");
-const logger = require("../logger");
+import express from "express";
+import { getAllImages, deleteManyById } from "../db.js";
+import logger from "../logger.js";
+
 const router = express.Router();
 
 router.get("/", (req, res) => {
@@ -32,4 +33,4 @@ router.post("/delete", (req, res) => {
   return res.redirect("/gallery");
 });
 
-module.exports = router;
+export default router;

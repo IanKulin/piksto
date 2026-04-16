@@ -1,9 +1,12 @@
-const fs = require("fs");
-const path = require("path");
-const Database = require("better-sqlite3");
-const { chromium } = require("@playwright/test");
+import fs from "fs";
+import path from "path";
+import Database from "better-sqlite3";
+import { chromium } from "@playwright/test";
+import { fileURLToPath } from "url";
 
-module.exports = async function globalSetup() {
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+
+export default async function globalSetup() {
   const dbPath = path.resolve(process.env.DB_PATH || path.join(__dirname, "../../data/test.db"));
   if (fs.existsSync(dbPath)) {
     const db = new Database(dbPath);
@@ -23,4 +26,4 @@ module.exports = async function globalSetup() {
 
   await context.storageState({ path: "test/e2e/.auth.json" });
   await browser.close();
-};
+}

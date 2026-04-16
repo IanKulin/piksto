@@ -1,4 +1,4 @@
-const { test, expect } = require("@playwright/test");
+import { test, expect } from "@playwright/test";
 
 test.describe("Stage 8 — Authentication", () => {
   test("unauthenticated request to / redirects to /login", async ({ browser }) => {

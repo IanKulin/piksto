@@ -20,4 +20,4 @@ const logger = new Proxy(
   }
 );
 
-module.exports = logger;
+export default logger;

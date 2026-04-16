@@ -1,7 +1,11 @@
-const { test, expect } = require("@playwright/test");
-const { execSync } = require("child_process");
-const path = require("path");
-const fs = require("fs");
+import { test, expect } from "@playwright/test";
+import { execSync } from "child_process";
+import path from "path";
+import fs from "fs";
+import Database from "better-sqlite3";
+import { fileURLToPath } from "url";
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 test.describe("Stage 1 — Project Scaffold & Server Startup", () => {
   test("server responds to HTTP requests", async ({ request }) => {
@@ -17,7 +21,6 @@ test.describe("Stage 1 — Project Scaffold & Server Startup", () => {
   });
 
   test("db contains the images table with correct schema", () => {
-    const Database = require("better-sqlite3");
     const dbPath = process.env.DB_PATH || path.join(__dirname, "../../data/photosink.db");
     const db = new Database(dbPath, { readonly: true });
 

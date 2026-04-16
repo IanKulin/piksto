@@ -1,6 +1,6 @@
-const express = require("express");
-const bcrypt = require("bcrypt");
-const rateLimit = require("express-rate-limit");
+import express from "express";
+import bcrypt from "bcrypt";
+import rateLimit from "express-rate-limit";
 
 const router = express.Router();
 
@@ -39,4 +39,4 @@ router.post("/logout", (req, res) => {
   });
 });
 
-module.exports = router;
+export default router;

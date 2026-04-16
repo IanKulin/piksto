@@ -1,6 +1,6 @@
-const { encrypt, decrypt } = require("./crypto");
-const { insertRaw, getById } = require("./db");
-const { generateThumbnail } = require("./thumbnail");
+import { encrypt, decrypt } from "./crypto.js";
+import { insertRaw, getById } from "./db.js";
+import { generateThumbnail } from "./thumbnail.js";
 
 function saveImage(mime, imageBuffer, thumbBuffer) {
   const encImage = encrypt(imageBuffer);
@@ -35,4 +35,4 @@ async function storeUpload(imageBuffer, mimeType) {
   return saveImage(mimeType, imageBuffer, thumbBuffer);
 }
 
-module.exports = { saveImage, getImage, getThumb, storeUpload };
+export { saveImage, getImage, getThumb, storeUpload };

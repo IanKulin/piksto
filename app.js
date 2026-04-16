@@ -1,3 +1,16 @@
+import express from "express";
+import path from "path";
+import session from "express-session";
+import { fileURLToPath } from "url";
+import { createRequire } from "module";
+import logger from "./src/logger.js";
+import "./src/db.js";
+import authRouter from "./src/routes/auth.js";
+import requireAuth from "./src/middleware/requireAuth.js";
+import uploadRouter from "./src/routes/upload.js";
+import galleryRouter from "./src/routes/gallery.js";
+import imageRouter from "./src/routes/image.js";
+
 // Validate ENCRYPTION_KEY at startup
 const key = process.env.ENCRYPTION_KEY;
 if (!key || key.length !== 64 || !/^[0-9a-fA-F]{64}$/.test(key)) {
@@ -11,14 +24,9 @@ if (!sessionSecret) {
   process.exit(1);
 }
 
-const express = require("express");
-const path = require("path");
-const session = require("express-session");
+const require = createRequire(import.meta.url);
 const { version } = require("./package.json");
-const logger = require("./src/logger");
-
-// Initialize database on startup
-require("./src/db");
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const app = express();
 
@@ -37,12 +45,6 @@ app.use(
   })
 );
 
-const authRouter = require("./src/routes/auth");
-const requireAuth = require("./src/middleware/requireAuth");
-const uploadRouter = require("./src/routes/upload");
-const galleryRouter = require("./src/routes/gallery");
-const imageRouter = require("./src/routes/image");
-
 app.use("/", authRouter);
 app.use("/", requireAuth, uploadRouter);
 app.use("/gallery", requireAuth, galleryRouter);
@@ -59,4 +61,4 @@ app.use((err, _req, res, _next) => {
   res.status(500).render("error", { message: "An unexpected error occurred." });
 });
 
-module.exports = app;
+export default app;

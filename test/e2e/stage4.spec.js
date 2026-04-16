@@ -1,7 +1,9 @@
-const { test, expect } = require("@playwright/test");
-const path = require("path");
-const Database = require("better-sqlite3");
+import { test, expect } from "@playwright/test";
+import path from "path";
+import Database from "better-sqlite3";
+import { fileURLToPath } from "url";
 
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const FIXTURES = path.join(__dirname, "../fixtures");
 
 // Helper: upload a fixture image via the file form and wait for success

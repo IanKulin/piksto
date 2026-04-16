@@ -1,7 +1,7 @@
-const express = require("express");
-const multer = require("multer");
-const { storeUpload } = require("../imageService");
-const logger = require("../logger");
+import express from "express";
+import multer from "multer";
+import { storeUpload } from "../imageService.js";
+import logger from "../logger.js";
 
 const router = express.Router();
 
@@ -128,4 +128,4 @@ router.post("/upload/url", async (req, res) => {
   }
 });
 
-module.exports = router;
+export default router;

@@ -1,7 +1,7 @@
-const express = require("express");
-const { getById, deleteById } = require("../db");
-const { getImage, getThumb } = require("../imageService");
-const logger = require("../logger");
+import express from "express";
+import { getById, deleteById } from "../db.js";
+import { getImage, getThumb } from "../imageService.js";
+import logger from "../logger.js";
 
 const router = express.Router();
 
@@ -81,4 +81,4 @@ router.post("/:id/delete", (req, res) => {
   return res.redirect("/gallery");
 });
 
-module.exports = router;
+export default router;

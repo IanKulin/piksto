@@ -1,10 +1,13 @@
-const { defineConfig } = require("@playwright/test");
-const path = require("path");
+import { defineConfig } from "@playwright/test";
+import path from "path";
+import { fileURLToPath } from "url";
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 // Set DB_PATH for both the test worker processes and the webServer process.
 process.env.DB_PATH = process.env.DB_PATH || path.join(__dirname, "data/test.db");
 
-module.exports = defineConfig({
+export default defineConfig({
   globalSetup: "./test/e2e/global-setup.js",
   testDir: "./test/e2e",
   workers: 1, // Tests share a single SQLite DB; parallel workers cause getLastImageId() races

@@ -1,8 +1,10 @@
-const { test, expect } = require("@playwright/test");
-const path = require("path");
-const fs = require("fs");
-const Database = require("better-sqlite3");
+import { test, expect } from "@playwright/test";
+import path from "path";
+import fs from "fs";
+import Database from "better-sqlite3";
+import { fileURLToPath } from "url";
 
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const FIXTURES = path.join(__dirname, "../fixtures");
 
 test.describe("Stage 3 — File Upload & Encryption Pipeline", () => {
