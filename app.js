@@ -13,6 +13,8 @@ import galleryRouter from "./src/routes/gallery.js";
 import imageRouter from "./src/routes/image.js";
 
 // Validate ENCRYPTION_KEY at startup
+// console.error is used here intentionally: logger relies on a dynamic import
+// that hasn't resolved yet at this point in startup.
 const key = process.env.ENCRYPTION_KEY;
 if (!key || key.length !== 64 || !/^[0-9a-fA-F]{64}$/.test(key)) {
   console.error("ERROR: ENCRYPTION_KEY must be set to a 64-character hex string (32 bytes).");
@@ -23,6 +25,11 @@ const sessionSecret = process.env.SESSION_SECRET;
 if (!sessionSecret) {
   console.error("ERROR: SESSION_SECRET must be set.");
   process.exit(1);
+}
+if (sessionSecret.length < 32) {
+  console.warn(
+    "WARNING: SESSION_SECRET is less than 32 characters; use a longer secret in production."
+  );
 }
 
 const require = createRequire(import.meta.url);
