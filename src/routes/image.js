@@ -51,7 +51,7 @@ router.get("/:id/thumb.jpg", (req, res) => {
       return res.status(404).render("error", { message: "Image not found." });
     }
     res.set("Content-Type", "image/jpeg");
-    res.set("Cache-Control", "public, max-age=31536000, immutable");
+    res.set("Cache-Control", "private, max-age=31536000, immutable");
     return res.send(result.thumbBuffer);
   } catch (err) {
     logger.error("Failed to decrypt thumbnail id=%s: %s", req.params.id, err.message);
