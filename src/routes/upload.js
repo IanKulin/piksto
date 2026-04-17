@@ -1,10 +1,24 @@
 import express from "express";
 import multer from "multer";
+import rateLimit from "express-rate-limit";
 import { storeUpload } from "../imageService.js";
 import logger from "../logger.js";
 import { assertSafeUrl, SsrfBlockedError } from "../ssrfGuard.js";
 
 const router = express.Router();
+
+const uploadRateLimit = rateLimit({
+  windowMs: parseInt(process.env.UPLOAD_RATE_LIMIT_WINDOW_MS, 10) || 60 * 1000,
+  max: parseInt(process.env.UPLOAD_RATE_LIMIT_MAX, 10) || 20,
+  standardHeaders: true,
+  legacyHeaders: false,
+  handler(_req, res) {
+    logger.warn("Upload rate limit exceeded");
+    res
+      .status(429)
+      .render("upload", { error: "Too many uploads. Please try again later.", success: null });
+  },
+});
 
 const ALLOWED_MIME_TYPES = ["image/jpeg", "image/png", "image/gif", "image/webp", "image/avif"];
 const MAX_UPLOAD_BYTES = parseInt(process.env.MAX_UPLOAD_BYTES, 10) || 2097152;
@@ -26,7 +40,7 @@ router.get("/", (req, res) => {
   res.render("upload", { success, error: null });
 });
 
-router.post("/upload/file", (req, res) => {
+router.post("/upload/file", uploadRateLimit, (req, res) => {
   upload.single("image")(req, res, async (err) => {
     if (err) {
       if (err.code === "LIMIT_FILE_SIZE") {
@@ -63,7 +77,7 @@ router.post("/upload/file", (req, res) => {
   });
 });
 
-router.post("/upload/url", async (req, res) => {
+router.post("/upload/url", uploadRateLimit, async (req, res) => {
   const { url } = req.body;
 
   if (!url) {

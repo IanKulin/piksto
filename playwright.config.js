@@ -31,6 +31,7 @@ export default defineConfig({
       AUTH_PASSWORD_HASH:
         process.env.AUTH_PASSWORD_HASH ||
         "$2b$12$ADdKcr2Prag0NdXvvVCsB.fP8WBpqDkEwTleKYWflABJt6HKlNV.a",
+      UPLOAD_RATE_LIMIT_MAX: "1000",
     },
   },
   projects: [{ name: "chromium", use: { browserName: "chromium" } }],
