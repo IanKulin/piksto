@@ -11,6 +11,7 @@ import requireAuth from "./src/middleware/requireAuth.js";
 import uploadRouter from "./src/routes/upload.js";
 import galleryRouter from "./src/routes/gallery.js";
 import imageRouter from "./src/routes/image.js";
+import healthRouter from "./src/routes/health.js";
 
 // Validate ENCRYPTION_KEY at startup
 // console.error is used here intentionally: logger relies on a dynamic import
@@ -82,6 +83,7 @@ app.use(
   })
 );
 
+app.use("/", healthRouter);
 app.use("/", authRouter);
 app.use("/", requireAuth, uploadRouter);
 app.use("/gallery", requireAuth, galleryRouter);

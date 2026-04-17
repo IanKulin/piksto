@@ -71,8 +71,12 @@ const testHelpers = {
   getRawById: (id) => stmts.getById.get(id),
 };
 
+function ping() {
+  db.prepare("SELECT 1").get();
+}
+
 function closeDb() {
   db.close();
 }
 
-export { insertRaw, deleteManyById, getAllImages, getById, deleteById, testHelpers, closeDb };
+export { insertRaw, deleteManyById, getAllImages, getById, deleteById, testHelpers, closeDb, ping };
