@@ -76,9 +76,16 @@ router.get("/:id/download", (req, res) => {
   }
 });
 
-router.post("/:id/delete", (req, res) => {
-  deleteById(req.params.id);
-  return res.redirect("/gallery");
+router.post("/:id/delete", (req, res, next) => {
+  const { id } = req.params;
+  try {
+    deleteById(id);
+    logger.info("Image deleted: id=%s", id);
+    return res.redirect("/gallery");
+  } catch (err) {
+    logger.error("Image delete failed: id=%s: %s", id, err.message);
+    return next(err);
+  }
 });
 
 export default router;

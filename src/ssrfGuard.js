@@ -1,5 +1,6 @@
 import dns from "node:dns/promises";
 import net from "node:net";
+import logger from "./logger.js";
 
 export class SsrfBlockedError extends Error {
   constructor(msg) {
@@ -28,8 +29,14 @@ export async function assertSafeUrl(rawUrl, resolver = dns) {
   const bare = hostname.replace(/^\[|\]$/g, "");
   if (net.isIP(bare) && isBlockedIp(bare)) throw new SsrfBlockedError("Blocked IP");
 
-  const v4 = await resolver.resolve4(hostname).catch(() => []);
-  const v6 = await resolver.resolve6(hostname).catch(() => []);
+  const v4 = await resolver.resolve4(hostname).catch((err) => {
+    logger.warn("SSRF guard: DNS resolve4 failed for %s: %s", hostname, err.message);
+    return [];
+  });
+  const v6 = await resolver.resolve6(hostname).catch((err) => {
+    logger.warn("SSRF guard: DNS resolve6 failed for %s: %s", hostname, err.message);
+    return [];
+  });
   const all = [...v4, ...v6];
   if (all.length === 0) throw new SsrfBlockedError("Could not resolve hostname");
   if (all.some(isBlockedIp)) throw new SsrfBlockedError("Blocked IP");

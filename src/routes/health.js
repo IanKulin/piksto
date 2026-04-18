@@ -1,6 +1,7 @@
 import express from "express";
 import rateLimit from "express-rate-limit";
 import { ping } from "../db.js";
+import logger from "../logger.js";
 
 const router = express.Router();
 
@@ -15,7 +16,8 @@ router.get("/health", healthRateLimit, (req, res) => {
   let dbStatus = "ok";
   try {
     ping();
-  } catch {
+  } catch (err) {
+    logger.error("Health check: database ping failed: %s", err.message);
     dbStatus = "error";
   }
 

@@ -4,7 +4,7 @@ const ready = import("@iankulin/logger").then(({ default: Logger }) => {
   _logger = new Logger({
     format: "simple",
     callerLevel: "warn",
-    level: process.env.LOG_LEVEL || "warn",
+    level: process.env.LOG_LEVEL || "info",
   });
 });
 
