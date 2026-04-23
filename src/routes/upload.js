@@ -22,7 +22,15 @@ const uploadRateLimit = rateLimit({
 });
 
 const ALLOWED_MIME_TYPES = ["image/jpeg", "image/png", "image/gif", "image/webp", "image/avif"];
-const MAX_UPLOAD_BYTES = parseInt(process.env.MAX_UPLOAD_BYTES, 10) || 2097152;
+const MAX_UPLOAD_BYTES = (() => {
+  if (process.env.MAX_UPLOAD_MB !== undefined) {
+    return Math.round(parseFloat(process.env.MAX_UPLOAD_MB) * 1024 * 1024);
+  }
+  if (process.env.MAX_UPLOAD_BYTES !== undefined) {
+    return parseInt(process.env.MAX_UPLOAD_BYTES, 10);
+  }
+  return 2 * 1024 * 1024;
+})();
 
 async function validateImageBuffer(buffer, declaredMime) {
   const detected = await fileTypeFromBuffer(buffer);
