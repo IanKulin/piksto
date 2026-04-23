@@ -1,7 +1,7 @@
 services:
-  photo-sink:
-    image: ghcr.io/iankulin/photo-sink
-    container_name: photo-sink
+  piksto:
+    image: ghcr.io/iankulin/piksto
+    container_name: piksto
     ports:
       - "3000:3000"
     volumes:

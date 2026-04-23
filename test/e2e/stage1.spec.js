@@ -16,12 +16,12 @@ test.describe("Stage 1 — Project Scaffold & Server Startup", () => {
   });
 
   test("db file exists on disk", () => {
-    const dbPath = process.env.DB_PATH || path.join(__dirname, "../../data/photosink.db");
+    const dbPath = process.env.DB_PATH || path.join(__dirname, "../../data/piksto.db");
     expect(fs.existsSync(dbPath)).toBe(true);
   });
 
   test("db contains the images table with correct schema", () => {
-    const dbPath = process.env.DB_PATH || path.join(__dirname, "../../data/photosink.db");
+    const dbPath = process.env.DB_PATH || path.join(__dirname, "../../data/piksto.db");
     const db = new Database(dbPath, { readonly: true });
 
     const cols = db.pragma("table_info(images)").map((c) => c.name);

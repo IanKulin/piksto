@@ -10,7 +10,7 @@ RUN npm ci --omit=dev
 
 FROM node:25-alpine AS production
 
-LABEL org.opencontainers.image.source=https://github.com/iankulin/photo-sink
+LABEL org.opencontainers.image.source=https://github.com/iankulin/piksto
 
 WORKDIR /app
 

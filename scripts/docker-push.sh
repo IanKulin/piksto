@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-IMAGE="ghcr.io/iankulin/photo-sink"
+IMAGE="ghcr.io/iankulin/piksto"
 VERSION=$(node -e "process.stdout.write(JSON.parse(require('fs').readFileSync('package.json','utf8')).version)")
 MAJOR=$(echo "$VERSION" | cut -d. -f1)
 MINOR=$(echo "$VERSION" | cut -d. -f1-2)

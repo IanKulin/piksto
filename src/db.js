@@ -10,7 +10,7 @@ if (!fs.existsSync(dbDir)) {
   fs.mkdirSync(dbDir, { recursive: true });
 }
 
-const dbPath = process.env.DB_PATH || path.join(dbDir, "photosink.db");
+const dbPath = process.env.DB_PATH || path.join(dbDir, "piksto.db");
 const db = new Database(dbPath);
 db.pragma("journal_mode = WAL");
 

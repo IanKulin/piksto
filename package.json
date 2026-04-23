@@ -1,5 +1,5 @@
 {
-  "name": "photo-sink",
+  "name": "piksto",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -13,7 +13,7 @@
     "generate-key": "node --eval \"console.log(require('crypto').randomBytes(32).toString('hex'))\"",
     "hash-password": "node --input-type=module --eval \"import bcrypt from 'bcrypt'; const h = await bcrypt.hash(process.argv[1], 10); console.log(h);\" --",
     "docker:hash-password": "node scripts/docker-hash-password.js",
-    "docker:build": "docker build -t ghcr.io/iankulin/photo-sink .",
+    "docker:build": "docker build -t ghcr.io/iankulin/piksto .",
     "docker:push": "bash scripts/docker-push.sh"
   },
   "keywords": [],

@@ -7,7 +7,7 @@ const port = process.env.PORT || 3000;
 
 logger.ready.then(() => {
   const server = app.listen(port, () => {
-    logger.info("photo-sink listening on port %d", port);
+    logger.info("piksto listening on port %d", port);
   });
 
   function shutdown(signal) {
