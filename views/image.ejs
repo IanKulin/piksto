@@ -1,9 +1,31 @@
-<%- include('_header', { actionsPartial: '_image-actions' }) %>
+<%- include('_header', { mainClass: 'main--image-view' }) %>
 
     <div class="image-detail">
-      <a href="<%= imageSrc %>" target="_blank" rel="noopener" class="image-detail__link">
+      <a href="<%= imageSrc %>" target="_blank" rel="noopener" class="image-detail__link" title="Open in new tab">
         <img src="<%= imageSrc %>" alt="Uploaded image <%= id %>" class="image-detail__img">
       </a>
+    </div>
+
+    <div class="image-shelf">
+      <span class="image-shelf__meta"><%= created_at %></span>
+
+      <div class="image-shelf__nav">
+        <% if (prevId) { %>
+        <a href="/image/<%= prevId %>" class="btn btn--small btn--secondary image-shelf__nav-btn">&#8592; Prev</a>
+        <% } else { %>
+        <span class="btn btn--small btn--secondary image-shelf__nav-btn image-shelf__nav-btn--disabled" aria-disabled="true">&#8592; Prev</span>
+        <% } %>
+        <% if (nextId) { %>
+        <a href="/image/<%= nextId %>" class="btn btn--small btn--secondary image-shelf__nav-btn">Next &#8594;</a>
+        <% } else { %>
+        <span class="btn btn--small btn--secondary image-shelf__nav-btn image-shelf__nav-btn--disabled" aria-disabled="true">Next &#8594;</span>
+        <% } %>
+      </div>
+
+      <div class="image-shelf__actions">
+        <a href="/image/<%= id %>/download" download class="btn btn--small">Download</a>
+        <a href="#confirm-delete" class="btn btn--small btn--danger">Delete</a>
+      </div>
     </div>
 
     <div id="confirm-delete" class="modal-backdrop">

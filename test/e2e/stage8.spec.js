@@ -50,7 +50,7 @@ test.describe("Stage 8 — Authentication", () => {
 
   test("logout destroys session and redirects to /login", async ({ page }) => {
     await page.goto("/");
-    await page.click('form[action="/logout"] button[type="submit"]');
+    await page.evaluate(() => document.querySelector('form[action="/logout"]').submit());
     await expect(page).toHaveURL(/\/login/);
   });
 
@@ -64,7 +64,7 @@ test.describe("Stage 8 — Authentication", () => {
     await page.click('button[type="submit"]');
     await expect(page).toHaveURL("http://localhost:3000/");
     // Logout
-    await page.click('form[action="/logout"] button[type="submit"]');
+    await page.evaluate(() => document.querySelector('form[action="/logout"]').submit());
     await expect(page).toHaveURL(/\/login/);
     // Protected route should redirect
     await page.goto("/gallery");

@@ -1,16 +1,25 @@
-<%- include('_header', { page: 'gallery', actionsPartial: '_gallery-actions' }) %>
+<%- include('_header', { page: 'gallery' }) %>
+
+<div class="gallery-toolbar" id="gallery-toolbar">
+  <span class="gallery-toolbar__count" id="gallery-count">
+    <%= images.length %> <%= images.length === 1 ? 'image' : 'images' %>
+  </span>
+  <% if (images.length > 0) { %>
+  <button class="btn btn--small btn--secondary" id="gallery-select-btn" type="button">Select</button>
+  <% } %>
+</div>
 
     <% if (images.length === 0) { %>
     <p class="gallery-empty">No images yet. <a href="/">Upload one!</a></p>
     <% } else { %>
-    <div class="gallery-grid">
+    <div class="gallery-grid" id="gallery-grid">
       <% images.forEach(function(img) { %>
       <div class="gallery-card" data-id="<%= img.id %>">
         <label class="gallery-card__select" aria-label="Select image">
           <input type="checkbox" class="gallery-card__checkbox" value="<%= img.id %>">
         </label>
         <a href="/image/<%= img.id %>" class="gallery-card__link">
-          <img src="/image/<%= img.id %>/thumb.jpg" alt="Uploaded image <%= img.id %>" class="gallery-card__img">
+          <img src="/image/<%= img.id %>/thumb.jpg" alt="Uploaded image" class="gallery-card__img" loading="lazy">
           <time class="gallery-card__date" datetime="<%= img.created_at %>"><%= img.created_at %></time>
         </a>
       </div>

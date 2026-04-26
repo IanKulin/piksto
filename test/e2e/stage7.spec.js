@@ -27,59 +27,67 @@ test.describe("Stage 7 — Bulk Delete", () => {
     clearDb();
   });
 
-  test("toolbar is hidden on load with images present", async ({ page }) => {
+  test("delete button is hidden on load with images present", async ({ page }) => {
     await uploadFixture(page, "red.jpg");
     await page.goto("/gallery");
-    await expect(page.locator("#bulk-toolbar")).toBeHidden();
+    await expect(page.locator("#gallery-delete-btn")).toBeHidden();
   });
 
-  test("toolbar appears after checking a box", async ({ page }) => {
+  test("delete button appears after entering select mode and checking a box", async ({ page }) => {
     await uploadFixture(page, "red.jpg");
     await page.goto("/gallery");
+    await page.locator("#gallery-select-btn").click();
     await page.locator(".gallery-card__checkbox").first().check();
-    await expect(page.locator("#bulk-toolbar")).toBeVisible();
+    await expect(page.locator("#gallery-delete-btn")).toBeVisible();
+    await expect(page.locator("#gallery-delete-btn")).not.toBeDisabled();
   });
 
-  test("select all checks all checkboxes", async ({ page }) => {
+  test("all checkboxes can be checked in select mode", async ({ page }) => {
     await uploadFixture(page, "red.jpg");
     await uploadFixture(page, "green.png");
     await page.goto("/gallery");
-
-    // Check one box first to show the toolbar, then select all
-    await page.locator(".gallery-card__checkbox").first().check();
-    await page.locator("#bulk-select-all").click();
+    await page.locator("#gallery-select-btn").click();
 
     const checkboxes = page.locator(".gallery-card__checkbox");
     const count = await checkboxes.count();
+    for (let i = 0; i < count; i++) {
+      await checkboxes.nth(i).check();
+    }
     for (let i = 0; i < count; i++) {
       await expect(checkboxes.nth(i)).toBeChecked();
     }
   });
 
-  test("clear unchecks all checkboxes and hides toolbar", async ({ page }) => {
+  test("cancel (exit select mode) unchecks all checkboxes and hides delete button", async ({
+    page,
+  }) => {
     await uploadFixture(page, "red.jpg");
     await uploadFixture(page, "green.png");
     await page.goto("/gallery");
-
-    // Check one box first to show the toolbar, then select all, then clear
-    await page.locator(".gallery-card__checkbox").first().check();
-    await page.locator("#bulk-select-all").click();
-    await page.locator("#bulk-clear").click();
+    await page.locator("#gallery-select-btn").click();
 
     const checkboxes = page.locator(".gallery-card__checkbox");
     const count = await checkboxes.count();
     for (let i = 0; i < count; i++) {
+      await checkboxes.nth(i).check();
+    }
+
+    // The Select button becomes Cancel in select mode
+    await page.locator("#gallery-select-btn").click();
+
+    for (let i = 0; i < count; i++) {
       await expect(checkboxes.nth(i)).not.toBeChecked();
     }
-    await expect(page.locator("#bulk-toolbar")).toBeHidden();
+    await expect(page.locator("#gallery-delete-btn")).toBeHidden();
   });
 
   test("cancel modal closes modal without deleting images", async ({ page }) => {
     await uploadFixture(page, "red.jpg");
     await page.goto("/gallery");
 
+    await page.locator("#gallery-select-btn").click();
     await page.locator(".gallery-card__checkbox").first().check();
-    await page.locator("#bulk-delete-btn").click();
+    await page.locator("#gallery-delete-btn").click();
     await expect(page.locator("#bulk-modal")).toBeVisible();
 
     await page.locator("#bulk-cancel-btn").click();
@@ -93,11 +101,12 @@ test.describe("Stage 7 — Bulk Delete", () => {
     await uploadFixture(page, "blue.webp");
     await page.goto("/gallery");
 
+    await page.locator("#gallery-select-btn").click();
     const checkboxes = page.locator(".gallery-card__checkbox");
     await checkboxes.nth(0).check();
     await checkboxes.nth(1).check();
 
-    await page.locator("#bulk-delete-btn").click();
+    await page.locator("#gallery-delete-btn").click();
     await expect(page.locator("#bulk-modal")).toBeVisible();
     await page.locator("#bulk-confirm-btn").click();
 
@@ -109,8 +118,9 @@ test.describe("Stage 7 — Bulk Delete", () => {
     await uploadFixture(page, "red.jpg");
     await page.goto("/gallery");
 
+    await page.locator("#gallery-select-btn").click();
     await page.locator(".gallery-card__checkbox").first().check();
-    await page.locator("#bulk-delete-btn").click();
+    await page.locator("#gallery-delete-btn").click();
     await page.locator("#bulk-confirm-btn").click();
 
     await page.waitForURL("/gallery", { timeout: 15_000 });
@@ -121,11 +131,12 @@ test.describe("Stage 7 — Bulk Delete", () => {
     await uploadFixture(page, "red.jpg");
     await page.goto("/gallery");
 
+    await page.locator("#gallery-select-btn").click();
     await page.locator(".gallery-card__checkbox").first().check();
     await page.goto("/");
     await page.goto("/gallery");
 
     await expect(page.locator(".gallery-card__checkbox").first()).not.toBeChecked();
-    await expect(page.locator("#bulk-toolbar")).toBeHidden();
+    await expect(page.locator("#gallery-delete-btn")).toBeHidden();
   });
 });

@@ -36,6 +36,20 @@ const stmts = {
   getAll: db.prepare("SELECT id, created_at FROM images ORDER BY created_at ASC"),
   getById: db.prepare("SELECT * FROM images WHERE id = ?"),
   deleteById: db.prepare("DELETE FROM images WHERE id = ?"),
+  prevImage: db.prepare(`
+    SELECT id FROM images
+    WHERE created_at < (SELECT created_at FROM images WHERE id = ?)
+       OR (created_at = (SELECT created_at FROM images WHERE id = ?) AND id < ?)
+    ORDER BY created_at DESC, id DESC
+    LIMIT 1
+  `),
+  nextImage: db.prepare(`
+    SELECT id FROM images
+    WHERE created_at > (SELECT created_at FROM images WHERE id = ?)
+       OR (created_at = (SELECT created_at FROM images WHERE id = ?) AND id > ?)
+    ORDER BY created_at ASC, id ASC
+    LIMIT 1
+  `),
 };
 
 function insertRaw(mime, encImage, encThumb) {
@@ -71,6 +85,12 @@ const testHelpers = {
   getRawById: (id) => stmts.getById.get(id),
 };
 
+function getAdjacentImages(id) {
+  const prev = stmts.prevImage.get(id, id, id);
+  const next = stmts.nextImage.get(id, id, id);
+  return { prevId: prev?.id ?? null, nextId: next?.id ?? null };
+}
+
 function ping() {
   db.prepare("SELECT 1").get();
 }
@@ -79,4 +99,14 @@ function closeDb() {
   db.close();
 }
 
-export { insertRaw, deleteManyById, getAllImages, getById, deleteById, testHelpers, closeDb, ping };
+export {
+  insertRaw,
+  deleteManyById,
+  getAllImages,
+  getById,
+  deleteById,
+  getAdjacentImages,
+  testHelpers,
+  closeDb,
+  ping,
+};

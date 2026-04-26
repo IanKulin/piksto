@@ -1,5 +1,5 @@
 import express from "express";
-import { getById, deleteById } from "../db.js";
+import { getById, deleteById, getAdjacentImages } from "../db.js";
 import { getImage, getThumb } from "../imageService.js";
 import logger from "../logger.js";
 
@@ -35,11 +35,14 @@ router.get("/:id", (req, res) => {
     return res.status(404).render("error", { message: "Image not found." });
   }
   const ext = MIME_TO_EXT[row.mime_type] || "bin";
+  const { prevId, nextId } = getAdjacentImages(row.id);
   return res.render("image", {
     id: row.id,
     mime_type: row.mime_type,
     created_at: row.created_at,
     imageSrc: `/image/${row.id}.${ext}`,
+    prevId,
+    nextId,
   });
 });
 

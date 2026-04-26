@@ -1,8 +1,17 @@
-const toolbar = document.getElementById("bulk-toolbar");
+const grid = document.getElementById("gallery-grid");
+const countEl = document.getElementById("gallery-count");
+const selectBtn = document.getElementById("gallery-select-btn");
 const modal = document.getElementById("bulk-modal");
 const confirmBtn = document.getElementById("bulk-confirm-btn");
 const cancelBtn = document.getElementById("bulk-cancel-btn");
 const form = document.getElementById("bulk-delete-form");
+const tabBar = document.getElementById("bottom-tab-bar");
+const mobileCancel = document.getElementById("mobile-select-cancel");
+const mobileCount = document.getElementById("mobile-select-count");
+const mobileDelete = document.getElementById("mobile-select-delete");
+
+let selectMode = false;
+let deleteBtn = null;
 
 function selectedIds() {
   return [...document.querySelectorAll(".gallery-card__checkbox:checked")].map((cb) =>
@@ -10,39 +19,111 @@ function selectedIds() {
   );
 }
 
-function syncToolbar() {
+function syncSelection() {
   const ids = selectedIds();
-  toolbar.hidden = ids.length === 0;
+  const n = ids.length;
+
   document.querySelectorAll(".gallery-card").forEach((card) => {
     const cb = card.querySelector(".gallery-card__checkbox");
     card.classList.toggle("gallery-card--selected", cb?.checked ?? false);
   });
+
+  countEl.textContent = `${n} selected`;
+  if (deleteBtn) {
+    deleteBtn.textContent = `Delete (${n})`;
+    deleteBtn.disabled = n === 0;
+  }
+  if (mobileCount) {
+    mobileCount.textContent = `${n} selected`;
+  }
 }
 
-document.querySelector(".gallery-grid")?.addEventListener("change", (e) => {
-  if (e.target.matches(".gallery-card__checkbox")) syncToolbar();
-});
+function enterSelectMode() {
+  selectMode = true;
+  grid?.classList.add("gallery-grid--select-mode");
 
-document.getElementById("bulk-select-all")?.addEventListener("click", () => {
-  document.querySelectorAll(".gallery-card__checkbox").forEach((cb) => (cb.checked = true));
-  syncToolbar();
-});
+  // Swap Select button to Cancel + add Delete button in toolbar
+  if (selectBtn) {
+    selectBtn.textContent = "Cancel";
+    selectBtn.classList.remove("btn--secondary");
+  }
 
-document.getElementById("bulk-clear")?.addEventListener("click", () => {
+  // Create delete button in toolbar if it doesn't exist
+  if (!deleteBtn) {
+    deleteBtn = document.createElement("button");
+    deleteBtn.className = "btn btn--small btn--danger";
+    deleteBtn.type = "button";
+    deleteBtn.id = "gallery-delete-btn";
+    deleteBtn.textContent = "Delete (0)";
+    deleteBtn.disabled = true;
+    deleteBtn.addEventListener("click", () => {
+      if (selectedIds().length > 0) modal.hidden = false;
+    });
+    document.getElementById("gallery-toolbar")?.appendChild(deleteBtn);
+  } else {
+    deleteBtn.hidden = false;
+  }
+
+  countEl.textContent = "0 selected";
+
+  // Mobile: transform bottom tab bar
+  tabBar?.classList.add("bottom-tab-bar--select-mode");
+}
+
+function exitSelectMode() {
+  selectMode = false;
+  grid?.classList.remove("gallery-grid--select-mode");
+
+  // Clear all checkboxes
   document.querySelectorAll(".gallery-card__checkbox").forEach((cb) => (cb.checked = false));
-  syncToolbar();
+  document
+    .querySelectorAll(".gallery-card")
+    .forEach((card) => card.classList.remove("gallery-card--selected"));
+
+  // Restore toolbar
+  if (selectBtn) {
+    selectBtn.textContent = "Select";
+    selectBtn.classList.add("btn--secondary");
+  }
+  if (deleteBtn) {
+    deleteBtn.hidden = true;
+  }
+
+  const total = document.querySelectorAll(".gallery-card").length;
+  countEl.textContent = `${total} ${total === 1 ? "image" : "images"}`;
+
+  // Mobile: restore bottom tab bar
+  tabBar?.classList.remove("bottom-tab-bar--select-mode");
+}
+
+selectBtn?.addEventListener("click", () => {
+  if (selectMode) {
+    exitSelectMode();
+  } else {
+    enterSelectMode();
+  }
 });
 
-document.getElementById("bulk-delete-btn")?.addEventListener("click", () => {
-  modal.hidden = false;
+grid?.addEventListener("change", (e) => {
+  if (e.target.matches(".gallery-card__checkbox")) syncSelection();
+});
+
+mobileCancel?.addEventListener("click", () => {
+  exitSelectMode();
+});
+
+mobileDelete?.addEventListener("click", () => {
+  if (selectedIds().length > 0) modal.hidden = false;
 });
 
 cancelBtn?.addEventListener("click", () => {
   modal.hidden = true;
 });
+
 modal?.addEventListener("click", (e) => {
   if (e.target === modal) modal.hidden = true;
 });
+
 document.addEventListener("keydown", (e) => {
   if (e.key === "Escape") modal.hidden = true;
 });

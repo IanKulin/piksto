@@ -17,13 +17,37 @@
       <a href="/" class="nav-link<%= locals.page === 'upload' ? ' nav-link--active' : '' %>">Upload</a>
       <a href="/gallery" class="nav-link<%= locals.page === 'gallery' ? ' nav-link--active' : '' %>">Gallery</a>
     </nav>
-    <div class="header-actions">
-      <% if (locals.actionsPartial) { %><%- include(locals.actionsPartial) %><% } %>
-      <% if (locals.user) { %>
-      <form method="POST" action="/logout" style="display:inline">
-        <button type="submit" class="btn btn--small">Sign out</button>
-      </form>
-      <% } %>
+    <% if (locals.user) { %>
+    <div class="user-menu" id="user-menu">
+      <button class="user-menu__trigger" id="user-menu-trigger" aria-haspopup="true" aria-expanded="false" aria-label="Account menu">
+        &#9679;
+      </button>
+      <div class="user-menu__dropdown" id="user-menu-dropdown">
+        <form method="POST" action="/logout">
+          <button type="submit" class="user-menu__item">Sign out</button>
+        </form>
+        <hr class="user-menu__separator" />
+        <span class="user-menu__version">v <%= version %></span>
+      </div>
     </div>
+    <% } %>
   </header>
+
+  <!-- Mobile bottom tab bar (hidden on desktop via CSS) -->
+  <% if (locals.user) { %>
+  <nav class="bottom-tab-bar" aria-label="Main navigation" id="bottom-tab-bar">
+    <a href="/" class="bottom-tab<%= locals.page === 'upload' ? ' bottom-tab--active' : '' %>">
+      <span class="bottom-tab__icon" aria-hidden="true">&#8679;</span>
+      <span class="bottom-tab__label">Upload</span>
+    </a>
+    <a href="/gallery" class="bottom-tab<%= locals.page === 'gallery' ? ' bottom-tab--active' : '' %>">
+      <span class="bottom-tab__icon" aria-hidden="true">&#9783;</span>
+      <span class="bottom-tab__label">Gallery</span>
+    </a>
+    <button class="bottom-tab-bar__select-cancel" id="mobile-select-cancel" type="button">Cancel</button>
+    <span class="bottom-tab-bar__select-count" id="mobile-select-count">0 selected</span>
+    <button class="bottom-tab-bar__select-delete btn btn--small btn--danger" id="mobile-select-delete" type="button">Delete</button>
+  </nav>
+  <% } %>
+
   <main<% if (locals.mainClass) { %> class="<%= locals.mainClass %>"<% } %>>

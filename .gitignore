@@ -3,4 +3,6 @@ data/
 .env
 test-results
 test/e2e/.auth.json
+svg
+temp
 

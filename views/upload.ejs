@@ -1,4 +1,4 @@
-<%- include('_header', { page: 'upload' }) %>
+<%- include('_header', { page: 'upload', mainClass: 'main--centered' }) %>
 
     <div class="card">
       <h1 class="card__title">Upload an Image</h1>
@@ -10,29 +10,28 @@
       <div class="banner banner--error" role="alert"><%= locals.error %></div>
       <% } %>
 
-      <section class="upload-section">
-        <form method="POST" action="/upload/file" enctype="multipart/form-data">
-          <div class="drop-zone" id="drop-zone">
-            <p class="drop-zone__label">Drop an image here</p>
-            <input type="file" accept="image/*" name="image" id="file-input" class="drop-zone__input">
-            <div class="drop-zone__file-row">
-              <label for="file-input" class="btn btn--secondary">Choose File</label>
-              <span class="drop-zone__filename" id="file-name">no file selected</span>
-            </div>
-            <button type="submit" class="btn" id="upload-btn" disabled>Upload File</button>
+      <form method="POST" action="/upload/file" enctype="multipart/form-data">
+        <div class="drop-zone" id="drop-zone">
+          <p class="drop-zone__label">Drop or tap to select an image</p>
+          <input type="file" accept="image/*" name="image" id="file-input" class="drop-zone__input">
+          <div class="drop-zone__file-row">
+            <label for="file-input" class="btn btn--secondary">Choose photo</label>
+            <span class="drop-zone__filename" id="file-name">no file selected</span>
           </div>
-        </form>
-      </section>
+          <button type="submit" class="btn" id="upload-btn" disabled>Upload</button>
+        </div>
+      </form>
 
-      <section class="upload-section">
-        <h2 class="upload-section__heading">Or fetch from URL</h2>
-        <form method="POST" action="/upload/url">
-          <div class="url-row">
-            <input type="text" name="url" placeholder="https://…" class="url-input" id="url-input" autofocus>
-            <button type="submit" class="btn" id="fetch-btn">Fetch</button>
-          </div>
-        </form>
-      </section>
+      <div class="upload-divider">
+        <span class="upload-divider__label">or fetch from URL</span>
+      </div>
+
+      <form method="POST" action="/upload/url">
+        <div class="url-row">
+          <input type="text" name="url" placeholder="https://…" class="url-input" id="url-input">
+          <button type="submit" class="btn" id="fetch-btn">Fetch</button>
+        </div>
+      </form>
     </div>
 
 <%- include('_footer') %>
