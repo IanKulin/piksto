@@ -26,7 +26,7 @@ async function getLastImageId() {
 test.describe("Stage 5 — Image Detail, Download & Delete", () => {
   test("clicking a gallery card navigates to /image/:id detail page", async ({ page }) => {
     await uploadImage(page, "red.jpg");
-    await page.goto("/gallery");
+    await page.goto("/allimages");
     await page.locator(".gallery-card").first().click();
     await expect(page).toHaveURL(/\/image\/\d+/);
     expect(page.url()).toMatch(/\/image\/\d+$/);
@@ -98,7 +98,7 @@ test.describe("Stage 5 — Image Detail, Download & Delete", () => {
 
     await page.locator('a[href="#confirm-delete"]').click();
     await page.locator('form[action$="/delete"] button[type="submit"]').click();
-    await expect(page).toHaveURL("/gallery");
+    await expect(page).toHaveURL("/allimages");
 
     // Image no longer accessible
     const res = await page.goto(`/image/${id}`);
@@ -111,7 +111,7 @@ test.describe("Stage 5 — Image Detail, Download & Delete", () => {
     await page.goto(`/image/${id}`);
     await page.locator('a[href="#confirm-delete"]').click();
     await page.locator('form[action$="/delete"] button[type="submit"]').click();
-    await expect(page).toHaveURL("/gallery");
+    await expect(page).toHaveURL("/allimages");
 
     const db = new Database(DB_PATH, { readonly: true });
     const row = db.prepare("SELECT id FROM images WHERE id = ?").get(id);
@@ -129,10 +129,10 @@ test.describe("Stage 5 — Image Detail, Download & Delete", () => {
     const id = await getLastImageId();
     await page.goto(`/image/${id}`);
 
-    const backLink = page.locator('a[href="/gallery"]').first();
+    const backLink = page.locator('a[href="/allimages"]').first();
     await expect(backLink).toBeVisible();
     await backLink.click();
-    await expect(page).toHaveURL("/gallery");
+    await expect(page).toHaveURL("/allimages");
   });
 
   test("delete form uses POST method", async ({ page }) => {

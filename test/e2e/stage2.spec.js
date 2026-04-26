@@ -22,10 +22,10 @@ test.describe("Stage 2 — Upload Page (UI Shell)", () => {
     await expect(banner).toBeVisible();
   });
 
-  test("nav link to /gallery is present in the header", async ({ page }) => {
+  test("nav link to /allimages is present in the header", async ({ page }) => {
     await page.goto("/");
-    const galleryLink = page.locator('header a[href="/gallery"]');
-    await expect(galleryLink).toBeVisible();
+    const allImagesLink = page.locator('header a[href="/allimages"]');
+    await expect(allImagesLink).toBeVisible();
   });
 
   test("file input accepts only images", async ({ page }) => {

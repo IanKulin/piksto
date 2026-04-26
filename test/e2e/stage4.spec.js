@@ -17,8 +17,8 @@ async function uploadImage(page, filename) {
 }
 
 test.describe("Stage 4 — Gallery Page", () => {
-  test("GET /gallery renders without error", async ({ page }) => {
-    const res = await page.goto("/gallery");
+  test("GET /allimages renders without error", async ({ page }) => {
+    const res = await page.goto("/allimages");
     expect(res.status()).toBe(200);
   });
 
@@ -31,7 +31,7 @@ test.describe("Stage 4 — Gallery Page", () => {
     db.close();
 
     if (count === 0) {
-      await page.goto("/gallery");
+      await page.goto("/allimages");
       await expect(page.locator(".gallery-empty")).toBeVisible();
       await expect(page.locator('.gallery-empty a[href="/"]')).toBeVisible();
     } else {
@@ -42,14 +42,14 @@ test.describe("Stage 4 — Gallery Page", () => {
 
   test("after uploading an image, gallery shows at least one thumbnail card", async ({ page }) => {
     await uploadImage(page, "red.jpg");
-    await page.goto("/gallery");
+    await page.goto("/allimages");
     const cards = page.locator(".gallery-card");
     await expect(cards.first()).toBeVisible();
   });
 
   test("gallery thumbnail images have a valid src (thumb URL)", async ({ page }) => {
     await uploadImage(page, "green.png");
-    await page.goto("/gallery");
+    await page.goto("/allimages");
     const firstImg = page.locator(".gallery-card img").first();
     await expect(firstImg).toBeVisible();
     const src = await firstImg.getAttribute("src");
@@ -58,7 +58,7 @@ test.describe("Stage 4 — Gallery Page", () => {
 
   test("each gallery card shows an upload date", async ({ page }) => {
     await uploadImage(page, "red.jpg");
-    await page.goto("/gallery");
+    await page.goto("/allimages");
     const date = page.locator(".gallery-card__date").first();
     await expect(date).toBeVisible();
     const text = await date.textContent();
@@ -67,20 +67,20 @@ test.describe("Stage 4 — Gallery Page", () => {
 
   test("clicking a gallery card navigates to /image/:id", async ({ page }) => {
     await uploadImage(page, "red.jpg");
-    await page.goto("/gallery");
+    await page.goto("/allimages");
     await page.locator(".gallery-card").first().click();
     await expect(page).toHaveURL(/\/image\/\d+/);
   });
 
   test("gallery grid layout is present in DOM", async ({ page }) => {
     await uploadImage(page, "red.jpg");
-    await page.goto("/gallery");
+    await page.goto("/allimages");
     await expect(page.locator(".gallery-grid")).toBeVisible();
   });
 
-  test("nav link to /gallery is present in header", async ({ page }) => {
-    await page.goto("/gallery");
-    await expect(page.locator('header a[href="/gallery"]')).toBeVisible();
+  test("nav link to /allimages is present in header", async ({ page }) => {
+    await page.goto("/allimages");
+    await expect(page.locator('header a[href="/allimages"]')).toBeVisible();
   });
 
   test("multiple uploaded images all appear in the gallery", async ({ page }) => {
@@ -88,7 +88,7 @@ test.describe("Stage 4 — Gallery Page", () => {
     await uploadImage(page, "green.png");
     await uploadImage(page, "blue.webp");
 
-    await page.goto("/gallery");
+    await page.goto("/allimages");
     const db = new Database(process.env.DB_PATH, { readonly: true });
     const totalCount = db.prepare("SELECT COUNT(*) as n FROM images").get().n;
     db.close();
@@ -99,7 +99,7 @@ test.describe("Stage 4 — Gallery Page", () => {
 
   test("gallery cards link href matches /image/:id pattern", async ({ page }) => {
     await uploadImage(page, "red.jpg");
-    await page.goto("/gallery");
+    await page.goto("/allimages");
     const hrefs = await page
       .locator(".gallery-card__link")
       .evaluateAll((els) => els.map((el) => el.getAttribute("href")));

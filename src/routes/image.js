@@ -84,7 +84,7 @@ router.post("/:id/delete", (req, res, next) => {
   try {
     deleteById(id);
     logger.info("Image deleted: id=%s", id);
-    return res.redirect("/gallery");
+    return res.redirect("/allimages");
   } catch (err) {
     logger.error("Image delete failed: id=%s: %s", id, err.message);
     return next(err);

@@ -48,10 +48,17 @@ test.describe("Stage 8 — Authentication", () => {
     await expect(page.locator(".banner--error")).toContainText("Invalid URL");
   });
 
-  test("logout destroys session and redirects to /login", async ({ page }) => {
-    await page.goto("/");
+  test("logout destroys session and redirects to /login", async ({ browser }) => {
+    const ctx = await browser.newContext({ storageState: undefined });
+    const page = await ctx.newPage();
+    await page.goto("/login");
+    await page.fill('input[name="username"]', process.env.AUTH_USERNAME || "admin");
+    await page.fill('input[name="password"]', "testpassword");
+    await page.click('button[type="submit"]');
+    await expect(page).toHaveURL("http://localhost:3000/");
     await page.evaluate(() => document.querySelector('form[action="/logout"]').submit());
     await expect(page).toHaveURL(/\/login/);
+    await ctx.close();
   });
 
   test("after logout, protected routes redirect back to /login", async ({ browser }) => {
@@ -67,7 +74,7 @@ test.describe("Stage 8 — Authentication", () => {
     await page.evaluate(() => document.querySelector('form[action="/logout"]').submit());
     await expect(page).toHaveURL(/\/login/);
     // Protected route should redirect
-    await page.goto("/gallery");
+    await page.goto("/allimages");
     await expect(page).toHaveURL(/\/login/);
     await ctx.close();
   });

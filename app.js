@@ -10,7 +10,7 @@ import sessionDb from "./src/sessionDb.js";
 import authRouter from "./src/routes/auth.js";
 import requireAuth from "./src/middleware/requireAuth.js";
 import uploadRouter from "./src/routes/upload.js";
-import galleryRouter from "./src/routes/gallery.js";
+import allimagesRouter from "./src/routes/allimages.js";
 import imageRouter from "./src/routes/image.js";
 import healthRouter from "./src/routes/health.js";
 
@@ -87,7 +87,8 @@ app.use(
 app.use("/", healthRouter);
 app.use("/", authRouter);
 app.use("/", requireAuth, uploadRouter);
-app.use("/gallery", requireAuth, galleryRouter);
+app.get("/gallery", (_req, res) => res.redirect(301, "/allimages"));
+app.use("/allimages", requireAuth, allimagesRouter);
 app.use("/image", requireAuth, imageRouter);
 
 // 404 handler

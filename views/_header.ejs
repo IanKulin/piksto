@@ -15,7 +15,8 @@
     <a href="/" class="site-title">piksto</a>
     <nav class="site-nav">
       <a href="/" class="nav-link<%= locals.page === 'upload' ? ' nav-link--active' : '' %>">Upload</a>
-      <a href="/gallery" class="nav-link<%= locals.page === 'gallery' ? ' nav-link--active' : '' %>">Gallery</a>
+      <a href="/allimages" class="nav-link<%= locals.page === 'allimages' ? ' nav-link--active' : '' %>">All Images</a>
+      <a href="/collections" class="nav-link<%= locals.page === 'collections' ? ' nav-link--active' : '' %>">Collections</a>
     </nav>
     <% if (locals.user) { %>
     <div class="user-menu" id="user-menu">
@@ -40,9 +41,13 @@
       <span class="bottom-tab__icon" aria-hidden="true">&#8679;</span>
       <span class="bottom-tab__label">Upload</span>
     </a>
-    <a href="/gallery" class="bottom-tab<%= locals.page === 'gallery' ? ' bottom-tab--active' : '' %>">
+    <a href="/allimages" class="bottom-tab<%= locals.page === 'allimages' ? ' bottom-tab--active' : '' %>">
       <span class="bottom-tab__icon" aria-hidden="true">&#9783;</span>
-      <span class="bottom-tab__label">Gallery</span>
+      <span class="bottom-tab__label">All Images</span>
+    </a>
+    <a href="/collections" class="bottom-tab<%= locals.page === 'collections' ? ' bottom-tab--active' : '' %>">
+      <span class="bottom-tab__icon" aria-hidden="true">&#9782;</span>
+      <span class="bottom-tab__label">Collections</span>
     </a>
     <span class="bottom-tab-bar__select-count" id="mobile-select-count">0 selected</span>
     <button class="bottom-tab-bar__select-cancel btn btn--small" id="mobile-select-cancel" type="button">Cancel</button>
