@@ -1,0 +1,75 @@
+<%- include('_header', { page: 'collections' }) %>
+
+<div class="gallery-toolbar" id="gallery-toolbar">
+  <span class="gallery-toolbar__count" id="gallery-count">
+    <%= collections.length %> <%= collections.length === 1 ? 'collection' : 'collections' %>
+  </span>
+  <div class="gallery-toolbar__actions" id="gallery-toolbar-actions">
+    <button class="btn btn--small btn--secondary" id="collections-add-btn" type="button">+</button>
+    <% if (collections.length > 0) { %>
+    <button class="btn btn--small btn--secondary" id="collections-select-btn" type="button">Select</button>
+    <% } %>
+  </div>
+</div>
+
+<% if (error) { %>
+<div class="banner banner--error" id="collections-error" role="alert"><%= error %></div>
+<% } %>
+
+<% if (collections.length === 0) { %>
+<p class="gallery-empty">Create your first collection</p>
+<% } else { %>
+<div class="collection-grid" id="collection-grid">
+  <% collections.forEach(function(col) { %>
+  <div class="collection-card" data-id="<%= col.id %>">
+    <label class="gallery-card__select" aria-label="Select collection">
+      <input type="checkbox" class="collection-card__checkbox" value="<%= col.id %>">
+    </label>
+    <a href="/collections/<%= col.slug %>" class="collection-card__link">
+      <% if (col.cover_image_id) { %>
+      <img src="/image/<%= col.cover_image_id %>/thumb.jpg" alt="Collection cover" class="collection-card__cover" loading="lazy">
+      <% } else { %>
+      <div class="collection-card__placeholder"></div>
+      <% } %>
+      <div class="collection-card__info">
+        <span class="collection-card__name"><%= col.name %></span>
+        <span class="collection-card__count"><%= col.image_count %> <%= col.image_count === 1 ? 'image' : 'images' %></span>
+      </div>
+    </a>
+  </div>
+  <% }); %>
+</div>
+<% } %>
+
+<form id="bulk-delete-form" action="/collections/delete" method="post"></form>
+
+<div class="modal-backdrop" id="bulk-modal" role="dialog" aria-modal="true" aria-labelledby="bulk-modal-msg" hidden>
+  <div class="modal">
+    <p class="modal__body" id="bulk-modal-msg">Delete the selected collections? Images will not be deleted.</p>
+    <div class="modal__actions">
+      <button id="bulk-cancel-btn" class="btn" type="button">Cancel</button>
+      <button id="bulk-confirm-btn" class="btn btn--danger" type="button">Delete</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-backdrop" id="create-modal" role="dialog" aria-modal="true" aria-labelledby="create-modal-title" hidden>
+  <div class="modal">
+    <p class="modal__body" id="create-modal-title"><strong>New collection</strong></p>
+    <form id="create-form" action="/collections" method="post">
+      <div class="form-group" style="margin-bottom:1rem;">
+        <label class="form-label" for="collection-name-input">Name</label>
+        <input class="form-input" type="text" id="collection-name-input" name="name" autocomplete="off" required>
+      </div>
+      <div id="create-error" class="banner banner--error" hidden></div>
+      <div class="modal__actions" style="margin-top:1rem;">
+        <button id="create-cancel-btn" class="btn btn--secondary" type="button">Cancel</button>
+        <button class="btn" type="submit">Save</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script src="/collections.js" defer></script>
+
+<%- include('_footer') %>

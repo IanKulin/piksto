@@ -11,6 +11,7 @@ import authRouter from "./src/routes/auth.js";
 import requireAuth from "./src/middleware/requireAuth.js";
 import uploadRouter from "./src/routes/upload.js";
 import allimagesRouter from "./src/routes/allimages.js";
+import collectionsRouter from "./src/routes/collections.js";
 import imageRouter from "./src/routes/image.js";
 import healthRouter from "./src/routes/health.js";
 
@@ -89,6 +90,7 @@ app.use("/", authRouter);
 app.use("/", requireAuth, uploadRouter);
 app.get("/gallery", (_req, res) => res.redirect(301, "/allimages"));
 app.use("/allimages", requireAuth, allimagesRouter);
+app.use("/collections", requireAuth, collectionsRouter);
 app.use("/image", requireAuth, imageRouter);
 
 // 404 handler
