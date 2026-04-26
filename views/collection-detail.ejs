@@ -1,0 +1,59 @@
+<%- include('_header', { page: 'collections' }) %>
+
+<div class="gallery-toolbar" id="gallery-toolbar">
+  <span class="gallery-toolbar__count" id="gallery-count">
+    <a href="/collections" class="back-link">&#8592; Collections</a>
+    &nbsp;&nbsp;<%= collection.name %>
+    &mdash; <%= images.length %> <%= images.length === 1 ? 'image' : 'images' %>
+  </span>
+  <div class="gallery-toolbar__actions" id="gallery-toolbar-actions">
+    <% if (images.length > 0) { %>
+    <button class="btn btn--small btn--secondary" id="gallery-select-btn" type="button">Select</button>
+    <% } %>
+  </div>
+</div>
+
+<% if (images.length === 0) { %>
+<p class="gallery-empty">No images yet &mdash; add some from <a href="/allimages">All Images</a></p>
+<% } else { %>
+<div class="gallery-grid" id="gallery-grid">
+  <% images.forEach(function(img) { %>
+  <div class="gallery-card" data-id="<%= img.id %>">
+    <label class="gallery-card__select" aria-label="Select image">
+      <input type="checkbox" class="gallery-card__checkbox" value="<%= img.id %>">
+    </label>
+    <a href="/image/<%= img.id %>" class="gallery-card__link">
+      <img src="/image/<%= img.id %>/thumb.jpg" alt="Uploaded image" class="gallery-card__img" loading="lazy">
+      <time class="gallery-card__date" datetime="<%= img.created_at %>"><%= img.created_at %></time>
+    </a>
+  </div>
+  <% }); %>
+</div>
+<% } %>
+
+<form id="remove-form" action="/collections/<%= collection.slug %>/remove" method="post"></form>
+<form id="delete-form" action="/collections/<%= collection.slug %>/delete" method="post"></form>
+
+<div class="modal-backdrop" id="remove-modal" role="dialog" aria-modal="true" aria-labelledby="remove-modal-msg" hidden>
+  <div class="modal">
+    <p class="modal__body" id="remove-modal-msg">Remove the selected images from this collection? The images will not be deleted.</p>
+    <div class="modal__actions">
+      <button id="remove-cancel-btn" class="btn" type="button">Cancel</button>
+      <button id="remove-confirm-btn" class="btn btn--secondary" type="button">Remove</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-backdrop" id="delete-modal" role="dialog" aria-modal="true" aria-labelledby="delete-modal-msg" hidden>
+  <div class="modal">
+    <p class="modal__body" id="delete-modal-msg">Permanently delete the selected images? They will be removed from all collections and cannot be recovered.</p>
+    <div class="modal__actions">
+      <button id="delete-cancel-btn" class="btn" type="button">Cancel</button>
+      <button id="delete-confirm-btn" class="btn btn--danger" type="button">Delete permanently</button>
+    </div>
+  </div>
+</div>
+
+<script src="/collection-detail.js" defer></script>
+
+<%- include('_footer') %>
