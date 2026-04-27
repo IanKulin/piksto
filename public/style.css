@@ -415,7 +415,11 @@ main {
   align-items: center;
 }
 
-#bulk-modal:not([hidden]) {
+#bulk-modal:not([hidden]),
+#create-modal:not([hidden]),
+#remove-modal:not([hidden]),
+#delete-modal:not([hidden]),
+#atc-modal:not([hidden]) {
   display: flex;
 }
 
@@ -863,6 +867,81 @@ main {
 
 .back-link:hover {
   color: var(--accent);
+}
+
+/* ── Add to Collection modal ── */
+.atc-modal {
+  max-width: 22rem;
+  width: 90%;
+  text-align: left;
+  padding: 1.25rem 1.5rem;
+}
+
+.atc-modal__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.75rem;
+}
+
+.atc-modal__title {
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+.atc-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  max-height: 55vh;
+  overflow-y: auto;
+}
+
+.atc-row {
+  border-radius: var(--radius);
+  border: 2px solid transparent;
+  transition: border-color 0.3s ease;
+}
+
+.atc-row--saving {
+  opacity: 0.6;
+}
+
+.atc-row--saved {
+  border-color: #22c55e;
+  animation: atc-pulse 0.6s ease-out;
+}
+
+@keyframes atc-pulse {
+  0% {
+    background: var(--success-bg, #dcfce7);
+  }
+  100% {
+    background: transparent;
+  }
+}
+
+.atc-row__label {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.55rem 0.5rem;
+  cursor: pointer;
+  font-size: var(--font-sm);
+  border-radius: var(--radius);
+}
+
+.atc-row__label:hover {
+  background: var(--border);
+}
+
+.atc-status {
+  color: var(--text-muted);
+  font-size: var(--font-sm);
+  padding: 0.75rem 0;
+  text-align: center;
+  margin: 0;
 }
 
 /* ── Dark mode ── */

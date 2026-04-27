@@ -14,6 +14,7 @@ import allimagesRouter from "./src/routes/allimages.js";
 import collectionsRouter from "./src/routes/collections.js";
 import imageRouter from "./src/routes/image.js";
 import healthRouter from "./src/routes/health.js";
+import apiRouter from "./src/routes/api.js";
 
 // Validate ENCRYPTION_KEY at startup
 // console.error is used here intentionally: logger relies on a dynamic import
@@ -87,6 +88,7 @@ app.use(
 
 app.use("/", healthRouter);
 app.use("/", authRouter);
+app.use("/api", requireAuth, apiRouter);
 app.use("/", requireAuth, uploadRouter);
 app.get("/gallery", (_req, res) => res.redirect(301, "/allimages"));
 app.use("/allimages", requireAuth, allimagesRouter);

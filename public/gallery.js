@@ -13,6 +13,7 @@ const mobileDelete = document.getElementById("mobile-select-delete");
 
 let selectMode = false;
 let deleteBtn = null;
+let addToCollectionBtn = null;
 
 function selectedIds() {
   return [...document.querySelectorAll(".gallery-card__checkbox:checked")].map((cb) =>
@@ -33,6 +34,9 @@ function syncSelection() {
   if (deleteBtn) {
     deleteBtn.disabled = n === 0;
   }
+  if (addToCollectionBtn) {
+    addToCollectionBtn.disabled = n === 0;
+  }
   if (mobileDelete) {
     mobileDelete.disabled = n === 0;
   }
@@ -51,7 +55,23 @@ function enterSelectMode() {
     selectBtn.classList.remove("btn--secondary");
   }
 
-  // Create delete button in toolbar if it doesn't exist
+  const actionsEl = document.getElementById("gallery-toolbar-actions");
+
+  if (!addToCollectionBtn) {
+    addToCollectionBtn = document.createElement("button");
+    addToCollectionBtn.className = "btn btn--small btn--secondary";
+    addToCollectionBtn.type = "button";
+    addToCollectionBtn.textContent = "Add to collection";
+    addToCollectionBtn.disabled = true;
+    addToCollectionBtn.addEventListener("click", () => {
+      const ids = selectedIds();
+      if (ids.length > 0) window.openAddToCollectionModal?.(ids);
+    });
+    actionsEl?.appendChild(addToCollectionBtn);
+  } else {
+    addToCollectionBtn.hidden = false;
+  }
+
   if (!deleteBtn) {
     deleteBtn = document.createElement("button");
     deleteBtn.className = "btn btn--small btn--danger";
@@ -62,7 +82,7 @@ function enterSelectMode() {
     deleteBtn.addEventListener("click", () => {
       if (selectedIds().length > 0) modal.hidden = false;
     });
-    document.getElementById("gallery-toolbar-actions")?.appendChild(deleteBtn);
+    actionsEl?.appendChild(deleteBtn);
   } else {
     deleteBtn.hidden = false;
   }
@@ -91,6 +111,9 @@ function exitSelectMode() {
   if (selectBtn) {
     selectBtn.textContent = "Select";
     selectBtn.classList.add("btn--secondary");
+  }
+  if (addToCollectionBtn) {
+    addToCollectionBtn.hidden = true;
   }
   if (deleteBtn) {
     deleteBtn.hidden = true;

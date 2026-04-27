@@ -18,6 +18,7 @@ const mobileDelete = document.getElementById("mobile-select-delete");
 let selectMode = false;
 let removeBtn = null;
 let permDeleteBtn = null;
+let addToCollectionBtn = null;
 
 const total = document.querySelectorAll(".gallery-card").length;
 
@@ -39,6 +40,7 @@ function syncSelection() {
   countEl.textContent = `${n} selected`;
   if (removeBtn) removeBtn.disabled = n === 0;
   if (permDeleteBtn) permDeleteBtn.disabled = n === 0;
+  if (addToCollectionBtn) addToCollectionBtn.disabled = n === 0;
   if (mobileDelete) mobileDelete.disabled = n === 0;
   if (mobileCount) mobileCount.textContent = `${n} selected`;
 }
@@ -53,6 +55,21 @@ function enterSelectMode() {
   }
 
   const actionsEl = document.getElementById("gallery-toolbar-actions");
+
+  if (!addToCollectionBtn) {
+    addToCollectionBtn = document.createElement("button");
+    addToCollectionBtn.className = "btn btn--small btn--secondary";
+    addToCollectionBtn.type = "button";
+    addToCollectionBtn.textContent = "Add to collection";
+    addToCollectionBtn.disabled = true;
+    addToCollectionBtn.addEventListener("click", () => {
+      const ids = selectedIds();
+      if (ids.length > 0) window.openAddToCollectionModal?.(ids);
+    });
+    actionsEl?.appendChild(addToCollectionBtn);
+  } else {
+    addToCollectionBtn.hidden = false;
+  }
 
   if (!removeBtn) {
     removeBtn = document.createElement("button");
@@ -101,6 +118,7 @@ function exitSelectMode() {
     selectBtn.textContent = "Select";
     selectBtn.classList.add("btn--secondary");
   }
+  if (addToCollectionBtn) addToCollectionBtn.hidden = true;
   if (removeBtn) removeBtn.hidden = true;
   if (permDeleteBtn) permDeleteBtn.hidden = true;
 
