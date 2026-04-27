@@ -840,11 +840,34 @@ main {
     padding: 0.6rem 1rem;
   }
 
-  .image-detail__img {
-    /* available = 100dvh - header - body-pad (tab-bar) - shelf */
-    max-height: calc(
-      100dvh - var(--header-height) - var(--tab-bar-height) - var(--shelf-height) - 0.5rem
-    );
+  /* Pin main to actual visible viewport — avoids dvh/svh unreliability with fat URL bar */
+  .main--image-view {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: calc(var(--tab-bar-height) + env(safe-area-inset-bottom));
+  }
+
+  /* Allow image-detail to shrink below its content's intrinsic size */
+  .main--image-view .image-detail {
+    min-height: 0;
+    align-items: stretch;
+  }
+
+  /*
+   * Stretch link to image-detail's full height, making it a definite containing
+   * block so max-height: 100% on the img resolves correctly (not against
+   * the inline-block auto height, which makes 100% resolve to nothing).
+   */
+  .main--image-view .image-detail__link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .main--image-view .image-detail__img {
+    max-height: 100%;
   }
 }
 
