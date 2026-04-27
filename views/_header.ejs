@@ -34,6 +34,16 @@
     <% } %>
   </header>
 
+  <%# Profile panel — shown above tab bar when profile tab is active %>
+  <% if (locals.user) { %>
+  <div class="profile-panel" id="profile-panel" hidden>
+    <form method="POST" action="/logout">
+      <button type="submit" class="profile-panel__item">Sign out</button>
+    </form>
+    <span class="profile-panel__version">v <%= version %></span>
+  </div>
+  <% } %>
+
   <!-- Mobile bottom tab bar (hidden on desktop via CSS) -->
   <% if (locals.user) { %>
   <nav class="bottom-tab-bar" aria-label="Main navigation" id="bottom-tab-bar">
@@ -49,6 +59,10 @@
       <span class="bottom-tab__icon" aria-hidden="true">&#9782;</span>
       <span class="bottom-tab__label">Collections</span>
     </a>
+    <button type="button" class="bottom-tab" id="profile-tab" aria-label="Profile">
+      <span class="bottom-tab__icon" aria-hidden="true">&#128100;</span>
+      <span class="bottom-tab__label">Profile</span>
+    </button>
     <span class="bottom-tab-bar__select-count" id="mobile-select-count">0 selected</span>
     <button class="bottom-tab-bar__select-cancel btn btn--small" id="mobile-select-cancel" type="button">Cancel</button>
     <button class="bottom-tab-bar__select-delete btn btn--small btn--danger" id="mobile-select-delete" type="button">Delete</button>

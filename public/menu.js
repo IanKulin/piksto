@@ -12,3 +12,18 @@ if (trigger && dropdown) {
     trigger.setAttribute("aria-expanded", "false");
   });
 }
+
+const profileTab = document.getElementById("profile-tab");
+const profilePanel = document.getElementById("profile-panel");
+if (profileTab && profilePanel) {
+  profileTab.addEventListener("click", (e) => {
+    e.stopPropagation();
+    const isOpen = !profilePanel.hidden;
+    profilePanel.hidden = isOpen;
+    profileTab.classList.toggle("bottom-tab--active", !isOpen);
+  });
+  document.addEventListener("click", () => {
+    profilePanel.hidden = true;
+    profileTab.classList.remove("bottom-tab--active");
+  });
+}

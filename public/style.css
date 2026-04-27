@@ -624,6 +624,10 @@ main {
     color: var(--text-muted);
     text-decoration: none;
     font-size: var(--font-xs);
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
   }
 
   .bottom-tab--active {
@@ -678,6 +682,65 @@ main {
 
   .site-nav {
     display: none;
+  }
+
+  .site-header {
+    display: none;
+  }
+
+  :root {
+    --header-height: 0px;
+  }
+}
+
+/* ── Profile panel ── */
+.profile-panel {
+  display: none;
+}
+
+@media (max-width: 600px) {
+  .profile-panel {
+    display: block;
+    position: fixed;
+    bottom: calc(var(--tab-bar-height) + env(safe-area-inset-bottom));
+    right: 0;
+    min-width: 10rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius) var(--radius) 0 0;
+    box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.12);
+    z-index: 200;
+  }
+
+  .profile-panel[hidden] {
+    display: none;
+  }
+
+  .profile-panel__item {
+    display: block;
+    width: 100%;
+    padding: 0.75rem 1rem;
+    background: none;
+    border: none;
+    text-align: left;
+    font-size: var(--font-base);
+    color: var(--text);
+    cursor: pointer;
+  }
+
+  .profile-panel__item:hover {
+    background: var(--bg);
+  }
+
+  .profile-panel__version {
+    display: block;
+    padding: 0.4rem 1rem 0.75rem;
+    font-size: var(--font-xs);
+    color: var(--text-muted);
+  }
+
+  #profile-tab.bottom-tab--active {
+    color: var(--accent);
   }
 }
 
