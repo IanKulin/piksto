@@ -41,6 +41,9 @@ db.exec(`
     added_at      DATETIME DEFAULT (datetime('now')),
     PRIMARY KEY (image_id, collection_id)
   );
+
+  CREATE INDEX IF NOT EXISTS idx_image_collections_collection_id
+    ON image_collections(collection_id);
 `);
 
 const stmts = {
