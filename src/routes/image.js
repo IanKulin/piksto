@@ -2,16 +2,9 @@ import express from "express";
 import { getById, deleteById, getAdjacentImages } from "../db.js";
 import { getImage, getThumb } from "../imageService.js";
 import logger from "../logger.js";
+import { MIME_TO_EXT } from "../mimeTypes.js";
 
 const router = express.Router();
-
-const MIME_TO_EXT = {
-  "image/jpeg": "jpg",
-  "image/png": "png",
-  "image/gif": "gif",
-  "image/webp": "webp",
-  "image/avif": "avif",
-};
 
 router.get("/:id.:ext", (req, res) => {
   try {

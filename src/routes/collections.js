@@ -12,16 +12,9 @@ import {
 } from "../db.js";
 import { slugify } from "../slugify.js";
 import logger from "../logger.js";
+import { MIME_TO_EXT } from "../mimeTypes.js";
 
 const router = express.Router();
-
-const MIME_TO_EXT = {
-  "image/jpeg": "jpg",
-  "image/png": "png",
-  "image/gif": "gif",
-  "image/webp": "webp",
-  "image/avif": "avif",
-};
 
 router.get("/", (_req, res) => {
   const collections = getAllCollections();
