@@ -172,22 +172,23 @@ function getCollectionsForImage(imageId) {
 }
 
 function toggleImageInCollection(imageId, collectionId) {
-  const existing = db
-    .prepare("SELECT 1 FROM image_collections WHERE image_id = ? AND collection_id = ?")
-    .get(imageId, collectionId);
-  if (existing) {
-    db.prepare("DELETE FROM image_collections WHERE image_id = ? AND collection_id = ?").run(
-      imageId,
-      collectionId
-    );
-    return { added: false };
-  } else {
+  return db.transaction(() => {
+    const existing = db
+      .prepare("SELECT 1 FROM image_collections WHERE image_id = ? AND collection_id = ?")
+      .get(imageId, collectionId);
+    if (existing) {
+      db.prepare("DELETE FROM image_collections WHERE image_id = ? AND collection_id = ?").run(
+        imageId,
+        collectionId
+      );
+      return { added: false };
+    }
     db.prepare("INSERT INTO image_collections (image_id, collection_id) VALUES (?, ?)").run(
       imageId,
       collectionId
     );
     return { added: true };
-  }
+  })();
 }
 
 function getAdjacentImagesInCollection(id, slug) {
