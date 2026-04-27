@@ -65,6 +65,22 @@ const stmts = {
     ORDER BY created_at ASC, id ASC
     LIMIT 1
   `),
+  prevImageInCollection: db.prepare(`
+    SELECT i.id FROM images i
+    JOIN image_collections ic ON ic.image_id = i.id
+    JOIN collections c ON c.id = ic.collection_id
+    WHERE c.slug = ? AND i.id < ?
+    ORDER BY i.id DESC
+    LIMIT 1
+  `),
+  nextImageInCollection: db.prepare(`
+    SELECT i.id FROM images i
+    JOIN image_collections ic ON ic.image_id = i.id
+    JOIN collections c ON c.id = ic.collection_id
+    WHERE c.slug = ? AND i.id > ?
+    ORDER BY i.id ASC
+    LIMIT 1
+  `),
 };
 
 function insertRaw(mime, encImage, encThumb) {
@@ -192,21 +208,9 @@ function toggleImageInCollection(imageId, collectionId) {
 }
 
 function getAdjacentImagesInCollection(id, slug) {
-  const rows = db
-    .prepare(
-      `SELECT i.id FROM images i
-       JOIN image_collections ic ON ic.image_id = i.id
-       JOIN collections c ON c.id = ic.collection_id
-       WHERE c.slug = ?
-       ORDER BY i.id ASC`
-    )
-    .all(slug);
-  const idx = rows.findIndex((r) => r.id === Number(id));
-  if (idx === -1) return { prevId: null, nextId: null };
-  return {
-    prevId: idx > 0 ? rows[idx - 1].id : null,
-    nextId: idx < rows.length - 1 ? rows[idx + 1].id : null,
-  };
+  const prev = stmts.prevImageInCollection.get(slug, id);
+  const next = stmts.nextImageInCollection.get(slug, id);
+  return { prevId: prev?.id ?? null, nextId: next?.id ?? null };
 }
 
 function getAdjacentImages(id) {
