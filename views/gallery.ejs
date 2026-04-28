@@ -3,6 +3,7 @@
 <% if (locals.deleteError) { %>
 <div class="banner banner--error" role="alert">Delete failed. Please try again.</div>
 <% } %>
+<h1 class="sr-only">Gallery</h1>
 <div class="gallery-toolbar" id="gallery-toolbar">
   <span class="gallery-toolbar__count" id="gallery-count">
     <%= images.length %> <%= images.length === 1 ? 'image' : 'images' %>
