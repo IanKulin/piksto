@@ -162,8 +162,6 @@ router.post("/upload/url", uploadRateLimit, async (req, res) => {
       // redirect: "error" is intentional — prevents redirect-based SSRF bypass (public URL -> internal address)
       response = await fetch(url, { signal: controller.signal, redirect: "error" });
     }
-    clearTimeout(timeout);
-
     if (!response.ok) {
       logger.warn("URL upload failed: HTTP %d from remote", response.status);
       return res.status(400).render("upload", { error: "Could not fetch image", success: null });
@@ -213,7 +211,6 @@ router.post("/upload/url", uploadRateLimit, async (req, res) => {
     logger.info("URL upload succeeded (%s)", verifiedMime);
     return res.redirect("/?success=1");
   } catch (err) {
-    clearTimeout(timeout);
     if (err.name === "AbortError") {
       logger.warn("URL upload failed: request timed out");
       return res.status(400).render("upload", { error: "Could not fetch image", success: null });
@@ -224,6 +221,8 @@ router.post("/upload/url", uploadRateLimit, async (req, res) => {
     }
     logger.error("URL upload failed: %s", err.message);
     return res.status(400).render("upload", { error: "Could not fetch image", success: null });
+  } finally {
+    clearTimeout(timeout);
   }
 });
 
