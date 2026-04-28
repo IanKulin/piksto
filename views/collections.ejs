@@ -30,7 +30,7 @@
       <% if (col.cover_image_id) { %>
       <img src="/image/<%= col.cover_image_id %>/thumb.jpg" alt="Collection cover" class="collection-card__cover" loading="lazy">
       <% } else { %>
-      <div class="collection-card__placeholder"></div>
+      <div class="collection-card__placeholder" aria-label="No cover image"></div>
       <% } %>
       <div class="collection-card__info">
         <span class="collection-card__name"><%= col.name %></span>

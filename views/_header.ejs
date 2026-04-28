@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="color-scheme" content="light dark">
+  <meta name="robots" content="noindex">
   <title><%= locals.pageTitle ? locals.pageTitle + ' · piksto' : 'piksto' %></title>
   <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
   <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
@@ -21,7 +22,7 @@
     <% if (locals.user) { %>
     <div class="user-menu" id="user-menu">
       <button class="user-menu__trigger" id="user-menu-trigger" aria-haspopup="true" aria-expanded="false" aria-label="Account menu">
-        &#9679;
+        &#128100;
       </button>
       <div class="user-menu__dropdown" id="user-menu-dropdown">
         <form method="POST" action="/logout">
