@@ -25,6 +25,7 @@ const stmts = {
     SELECT c.id, c.name, c.slug FROM collections c
     JOIN image_collections ic ON ic.collection_id = c.id
     WHERE ic.image_id = ?
+    ORDER BY c.name ASC
   `),
   toggleCheckMembership: db.prepare(
     "SELECT 1 FROM image_collections WHERE image_id = ? AND collection_id = ?"
