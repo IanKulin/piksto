@@ -38,7 +38,11 @@ router.get("/:id", (req, res) => {
     logger.warn("Image not found: id=%s", req.params.id);
     return res.status(404).render("error", { message: "Image not found." });
   }
-  const ext = MIME_TO_EXT[row.mime_type] || "bin";
+  const ext = MIME_TO_EXT[row.mime_type];
+  if (!ext) {
+    logger.error("Unknown mime_type in database: %s (id=%s)", row.mime_type, row.id);
+    return res.status(500).render("error", { message: "An unexpected error occurred." });
+  }
   const { prevId, nextId } = getAdjacentImages(row.id);
   return res.render("image-detail", {
     id: row.id,
@@ -76,7 +80,11 @@ router.get("/:id/download", (req, res) => {
       logger.warn("Download not found: id=%s", req.params.id);
       return res.status(404).render("error", { message: "Image not found." });
     }
-    const ext = MIME_TO_EXT[result.mime_type] || "bin";
+    const ext = MIME_TO_EXT[result.mime_type];
+    if (!ext) {
+      logger.error("Unknown mime_type in database: %s (id=%s)", result.mime_type, result.id);
+      return res.status(500).render("error", { message: "An unexpected error occurred." });
+    }
     res.set("Content-Type", result.mime_type);
     res.set("Content-Disposition", `attachment; filename="photo-${result.id}.${ext}"`);
     return res.send(result.imageBuffer);

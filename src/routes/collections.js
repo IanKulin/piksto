@@ -80,7 +80,11 @@ router.get("/:slug/image/:id", (req, res, next) => {
     return res.status(404).render("error", { message: "Image not found in this collection." });
   }
 
-  const ext = MIME_TO_EXT[row.mime_type] || "bin";
+  const ext = MIME_TO_EXT[row.mime_type];
+  if (!ext) {
+    logger.error("Unknown mime_type in database: %s (id=%s)", row.mime_type, row.id);
+    return res.status(500).render("error", { message: "An unexpected error occurred." });
+  }
   const { prevId, nextId } = getAdjacentImagesInCollection(row.id, req.params.slug);
 
   return res.render("image-detail", {
