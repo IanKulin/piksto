@@ -28,7 +28,8 @@
 
       <form method="POST" action="/upload/url">
         <div class="url-row">
-          <input type="text" name="url" placeholder="https://…" class="url-input" id="url-input" autofocus>
+          <label for="url-input" class="sr-only">Image URL</label>
+          <input type="url" name="url" placeholder="https://…" class="url-input" id="url-input" autofocus>
           <button type="submit" class="btn" id="fetch-btn">Fetch</button>
         </div>
       </form>

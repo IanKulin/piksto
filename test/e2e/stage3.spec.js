@@ -112,7 +112,12 @@ test.describe("Stage 3 — File Upload & Encryption Pipeline", () => {
     test("malformed URL (no scheme) → shows Invalid URL error", async ({ page }) => {
       await page.goto("/");
       await page.locator('input[name="url"]').fill("not-a-url");
-      await page.locator('form[action="/upload/url"] button[type="submit"]').click();
+      // Bypass browser URL validation to exercise server-side rejection
+      await page.evaluate(() => {
+        const form = document.querySelector('form[action="/upload/url"]');
+        form.noValidate = true;
+        form.requestSubmit();
+      });
       await expect(page.locator(".banner--error")).toContainText("Invalid URL");
     });
 
