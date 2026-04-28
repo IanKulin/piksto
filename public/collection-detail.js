@@ -11,6 +11,7 @@ const removeConfirmBtn = document.getElementById("remove-confirm-btn");
 const deleteCancelBtn = document.getElementById("delete-cancel-btn");
 const deleteConfirmBtn = document.getElementById("delete-confirm-btn");
 const tabBar = document.getElementById("bottom-tab-bar");
+const actionsBar = document.getElementById("bottom-tab-bar-actions");
 const mobileCancel = document.getElementById("mobile-select-cancel");
 const mobileCount = document.getElementById("mobile-select-count");
 const mobileDelete = document.getElementById("mobile-select-delete");
@@ -102,6 +103,7 @@ function enterSelectMode() {
   countEl.textContent = "0 selected";
   if (mobileDelete) mobileDelete.disabled = true;
   tabBar?.classList.add("bottom-tab-bar--select-mode");
+  actionsBar?.removeAttribute("aria-hidden");
   toolbar?.classList.add("gallery-toolbar--select-mode");
 }
 
@@ -124,6 +126,7 @@ function exitSelectMode() {
 
   countEl.textContent = `${total} ${total === 1 ? "image" : "images"}`;
   tabBar?.classList.remove("bottom-tab-bar--select-mode");
+  actionsBar?.setAttribute("aria-hidden", "true");
   toolbar?.classList.remove("gallery-toolbar--select-mode");
 }
 
