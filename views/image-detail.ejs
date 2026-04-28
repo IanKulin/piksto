@@ -39,12 +39,12 @@
       </div>
     </div>
 
-    <div id="confirm-delete" class="modal-backdrop" hidden role="dialog" aria-modal="true">
+    <div id="confirm-delete" class="modal-backdrop" hidden role="dialog" aria-modal="true" aria-labelledby="confirm-delete-title">
       <div class="modal">
         <% if (context === 'collection') { %>
-        <p class="modal__body">Delete this image? It will be removed from all collections and cannot be undone.</p>
+        <p class="modal__body" id="confirm-delete-title">Delete this image? It will be removed from all collections and cannot be undone.</p>
         <% } else { %>
-        <p class="modal__body">Delete this image? This cannot be undone.</p>
+        <p class="modal__body" id="confirm-delete-title">Delete this image? This cannot be undone.</p>
         <% } %>
         <div class="modal__actions">
           <button type="button" id="cancel-delete-btn" class="btn">Cancel</button>
