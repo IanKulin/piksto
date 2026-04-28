@@ -98,7 +98,9 @@ export default function createSessionStore(Store) {
 
     all(cb) {
       try {
-        const rows = this.db.prepare(`SELECT sid, sess FROM ${TABLE}`).all();
+        const rows = this.db
+          .prepare(`SELECT sid, sess FROM ${TABLE} WHERE datetime('now') < datetime(expire)`)
+          .all();
         cb(
           null,
           rows.map((r) => ({ ...JSON.parse(r.sess), id: r.sid }))
