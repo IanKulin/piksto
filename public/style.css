@@ -385,14 +385,18 @@ main {
 }
 
 /* ── Gallery grid ── */
-.image-grid {
+.photo-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
   gap: 1rem;
+}
+
+.image-grid {
   padding: 0;
 }
 
-.image-card {
+/* ── Card base ── */
+.photo-card {
   position: relative;
   background: var(--surface);
   border: 1px solid var(--border);
@@ -401,11 +405,16 @@ main {
   transition: border-color var(--duration);
 }
 
-.image-card:hover {
+.photo-card:hover {
   border-color: var(--accent);
 }
 
-.image-card__link {
+.photo-card--selected {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px var(--accent);
+}
+
+.photo-card__link {
   display: flex;
   flex-direction: column;
   text-decoration: none;
@@ -426,13 +435,8 @@ main {
   opacity: 1;
 }
 
-.image-card--selected .image-card__select {
+.photo-card--selected .image-card__select {
   opacity: 1;
-}
-
-.image-card--selected {
-  border-color: var(--accent);
-  box-shadow: 0 0 0 2px var(--accent);
 }
 
 #bulk-toolbar:not([hidden]) {
@@ -790,7 +794,7 @@ main {
 
 /* ── Gallery grid mobile ── */
 @media (max-width: 600px) {
-  .image-grid {
+  .photo-grid {
     grid-template-columns: repeat(2, 1fr);
     gap: 0.5rem;
   }
@@ -904,38 +908,6 @@ main {
   background: var(--border);
 }
 
-/* ── Collection grid ── */
-.collection-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-  gap: 1rem;
-}
-
-.collection-card {
-  position: relative;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  overflow: hidden;
-  transition: border-color var(--duration);
-}
-
-.collection-card:hover {
-  border-color: var(--accent);
-}
-
-.collection-card--selected {
-  border-color: var(--accent);
-  box-shadow: 0 0 0 2px var(--accent);
-}
-
-.collection-card__link {
-  display: flex;
-  flex-direction: column;
-  text-decoration: none;
-  color: var(--text);
-}
-
 .collection-card__cover {
   width: 100%;
   aspect-ratio: 1;
@@ -981,13 +953,6 @@ main {
 .image-grid--select-mode .image-card__select,
 .collection-grid--select-mode .image-card__select {
   opacity: 1;
-}
-
-@media (max-width: 600px) {
-  .collection-grid {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 0.5rem;
-  }
 }
 
 /* ── Back link ── */

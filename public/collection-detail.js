@@ -35,7 +35,7 @@ function syncSelection() {
 
   document.querySelectorAll(".image-card").forEach((card) => {
     const cb = card.querySelector(".image-card__checkbox");
-    card.classList.toggle("image-card--selected", cb?.checked ?? false);
+    card.classList.toggle("photo-card--selected", cb?.checked ?? false);
   });
 
   countEl.textContent = `${n} selected`;
@@ -114,7 +114,7 @@ function exitSelectMode() {
   document.querySelectorAll(".image-card__checkbox").forEach((cb) => (cb.checked = false));
   document
     .querySelectorAll(".image-card")
-    .forEach((card) => card.classList.remove("image-card--selected"));
+    .forEach((card) => card.classList.remove("photo-card--selected"));
 
   if (selectBtn) {
     selectBtn.textContent = "Select";

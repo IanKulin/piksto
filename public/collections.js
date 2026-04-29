@@ -32,7 +32,7 @@ function syncSelection() {
 
   document.querySelectorAll(".collection-card").forEach((card) => {
     const cb = card.querySelector(".collection-card__checkbox");
-    card.classList.toggle("image-card--selected", cb?.checked ?? false);
+    card.classList.toggle("photo-card--selected", cb?.checked ?? false);
   });
 
   countEl.textContent = `${n} selected`;
@@ -78,7 +78,7 @@ function exitSelectMode() {
   document.querySelectorAll(".collection-card__checkbox").forEach((cb) => (cb.checked = false));
   document
     .querySelectorAll(".collection-card")
-    .forEach((card) => card.classList.remove("image-card--selected"));
+    .forEach((card) => card.classList.remove("photo-card--selected"));
 
   if (selectBtn) {
     selectBtn.textContent = "Select";

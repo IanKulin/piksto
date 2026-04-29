@@ -18,13 +18,13 @@
 <% if (images.length === 0) { %>
 <p class="image-grid__empty">No images yet &mdash; add some from <a href="/allimages">All Images</a></p>
 <% } else { %>
-<div class="image-grid" id="image-grid">
+<div class="photo-grid image-grid" id="image-grid">
   <% images.forEach(function(img) { %>
-  <div class="image-card" data-id="<%= img.id %>">
+  <div class="photo-card image-card" data-id="<%= img.id %>">
     <label class="image-card__select">
       <input type="checkbox" class="image-card__checkbox" value="<%= img.id %>" aria-label="Select image">
     </label>
-    <a href="/collections/<%= collection.slug %>/image/<%= img.id %>" class="image-card__link">
+    <a href="/collections/<%= collection.slug %>/image/<%= img.id %>" class="photo-card__link image-card__link">
       <img src="/image/<%= img.id %>/thumb.jpg" alt="Uploaded image" class="image-card__img" loading="lazy">
       <time class="image-card__date" datetime="<%= img.created_at %>"><%= img.created_at %></time>
     </a>

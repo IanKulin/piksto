@@ -20,13 +20,13 @@
 <% if (collections.length === 0) { %>
 <p class="image-grid__empty">Create your first collection</p>
 <% } else { %>
-<div class="collection-grid" id="collection-grid">
+<div class="photo-grid collection-grid" id="collection-grid">
   <% collections.forEach(function(col) { %>
-  <div class="collection-card" data-id="<%= col.id %>">
+  <div class="photo-card collection-card" data-id="<%= col.id %>">
     <label class="image-card__select">
       <input type="checkbox" class="collection-card__checkbox" value="<%= col.id %>" aria-label="Select collection">
     </label>
-    <a href="/collections/<%= col.slug %>" class="collection-card__link">
+    <a href="/collections/<%= col.slug %>" class="photo-card__link collection-card__link">
       <% if (col.cover_image_id) { %>
       <img src="/image/<%= col.cover_image_id %>/thumb.jpg" alt="Collection cover" class="collection-card__cover" loading="lazy">
       <% } else { %>
