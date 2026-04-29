@@ -30,6 +30,10 @@
   --header-height: 3rem;
   --tab-bar-height: 3.5rem;
   --shelf-height: 3.5rem;
+  --z-dropdown: 100;
+  --z-tabbar: 200;
+  --z-tabbar-select: 201;
+  --z-modal: 300;
 }
 
 /* ── Reset & base ── */
@@ -333,7 +337,7 @@ main {
   background: var(--overlay);
   align-items: center;
   justify-content: center;
-  z-index: 300;
+  z-index: var(--z-modal);
 }
 
 .modal {
@@ -562,7 +566,7 @@ main {
   border-radius: var(--radius-sm);
   min-width: 9rem;
   box-shadow: var(--shadow-sm);
-  z-index: 100;
+  z-index: var(--z-dropdown);
 }
 
 .user-menu__dropdown--open {
@@ -619,7 +623,7 @@ main {
     height: var(--tab-bar-height);
     background: var(--surface);
     border-top: 1px solid var(--border);
-    z-index: 200;
+    z-index: var(--z-tabbar);
     padding-bottom: env(safe-area-inset-bottom);
   }
 
@@ -668,7 +672,7 @@ main {
     height: var(--tab-bar-height);
     background: var(--surface);
     border-top: 1px solid var(--border);
-    z-index: 201;
+    z-index: var(--z-tabbar-select);
   }
 
   .bottom-tab-bar--select-mode + .bottom-tab-bar-actions .bottom-tab-bar__select-cancel,
@@ -721,7 +725,7 @@ main {
     border: 1px solid var(--border);
     border-radius: var(--radius) var(--radius) 0 0;
     box-shadow: var(--shadow-md);
-    z-index: 200;
+    z-index: var(--z-tabbar);
   }
 
   .profile-panel[hidden] {
