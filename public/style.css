@@ -28,6 +28,10 @@
   --font-base: 0.9375rem;
   --font-sm: 0.875rem;
   --font-xs: 0.8125rem;
+  --font-md: 1.125rem;
+  --font-lg: 1.25rem;
+  --font-xl: 1.5rem;
+  --font-2xl: 2rem;
   /* tab bar (mobile nav) and image shelf are currently intentionally the 
    same height; the desktop image max-height calc (line ~507) depends on 
    --shelf-height matching the effective bottom chrome height. Update both 
@@ -88,7 +92,7 @@ a:hover {
 
 .site-title {
   font-weight: 700;
-  font-size: 1.125rem;
+  font-size: var(--font-md);
   color: var(--text);
 }
 
@@ -141,7 +145,7 @@ main {
 }
 
 .card__title {
-  font-size: 1.5rem;
+  font-size: var(--font-xl);
 }
 
 /* ── Banners ── */
@@ -375,7 +379,7 @@ main {
 }
 
 .modal__title {
-  font-size: 1.5rem;
+  font-size: var(--font-xl);
   font-weight: 700;
   margin: 0;
 }
@@ -541,7 +545,7 @@ main {
   background: none;
   border: none;
   cursor: pointer;
-  font-size: 1.25rem;
+  font-size: var(--font-lg);
   color: var(--text);
   padding: 0.25rem 0.5rem;
   border-radius: var(--radius-sm);
@@ -644,7 +648,7 @@ main {
   }
 
   .bottom-tab__icon {
-    font-size: 1.25rem;
+    font-size: var(--font-lg);
     line-height: 1;
   }
 
@@ -923,7 +927,7 @@ main {
   align-items: center;
   justify-content: center;
   color: var(--text-muted);
-  font-size: 2rem;
+  font-size: var(--font-2xl);
 }
 
 .collection-card__placeholder::after {
