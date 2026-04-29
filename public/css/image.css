@@ -1,0 +1,190 @@
+/* ── Image view layout ── */
+.main--image-view {
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+}
+
+/* ── Image detail ── */
+.image-detail {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.image-detail__link {
+  display: inline-block;
+}
+
+.image-detail__img {
+  max-width: 100%;
+  /* available = 100vh - header - shelf; small remainder for breathing room */
+  max-height: calc(100vh - var(--header-height) - var(--shelf-height) - 0.5rem);
+  object-fit: contain;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  display: block;
+  cursor: zoom-in;
+}
+
+/* ── Image shelf ── */
+.image-shelf {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.75rem 1.5rem;
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+  min-height: var(--shelf-height);
+  flex-wrap: wrap;
+  margin: 0;
+}
+
+.image-shelf__meta {
+  font-size: var(--font-xs);
+  color: var(--text-muted);
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.image-shelf__nav {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.image-shelf__nav-btn--disabled {
+  opacity: 0.35;
+  cursor: default;
+  pointer-events: none;
+}
+
+.image-shelf__actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+@media (max-width: 600px) {
+  .image-shelf__nav {
+    display: none;
+  }
+
+  .image-shelf {
+    padding: 0.6rem 1rem;
+  }
+
+  /* Pin main to actual visible viewport — avoids dvh/svh unreliability with fat URL bar */
+  .main--image-view {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: calc(var(--tab-bar-height) + env(safe-area-inset-bottom));
+  }
+
+  /* Allow image-detail to shrink below its content's intrinsic size */
+  .main--image-view .image-detail {
+    min-height: 0;
+    align-items: stretch;
+  }
+
+  /*
+   * Stretch link to image-detail's full height, making it a definite containing
+   * block so max-height: 100% on the img resolves correctly (not against
+   * the inline-block auto height, which makes 100% resolve to nothing).
+   */
+  .main--image-view .image-detail__link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .main--image-view .image-detail__img {
+    max-height: 100%;
+  }
+}
+
+/* ── Add to Collection modal ── */
+.atc-modal {
+  max-width: 22rem;
+  width: 90%;
+  text-align: left;
+  padding: 1.25rem 1.5rem;
+}
+
+.atc-modal__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.75rem;
+}
+
+.atc-modal__title {
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+.atc-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  max-height: 55vh;
+  overflow-y: auto;
+}
+
+.atc-row {
+  border-radius: var(--radius);
+  border: 2px solid transparent;
+  transition: border-color var(--duration-slow);
+}
+
+.atc-row--saving {
+  opacity: 0.6;
+}
+
+.atc-row--saved {
+  border-color: var(--success-border);
+  animation: atc-pulse 0.6s ease-out;
+}
+
+@keyframes atc-pulse {
+  0% {
+    background: var(--success-bg);
+  }
+  100% {
+    background: transparent;
+  }
+}
+
+.atc-row__label {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.5rem;
+  cursor: pointer;
+  font-size: var(--font-sm);
+  border-radius: var(--radius);
+}
+
+.atc-row__label:hover {
+  background: var(--border);
+}
+
+.atc-status {
+  color: var(--text-muted);
+  font-size: var(--font-sm);
+  padding: 0.75rem 0;
+  text-align: center;
+  margin: 0;
+}
+
+/* ── Image shelf back link ── */
+.image-shelf__back {
+  flex: 0 0 auto;
+}

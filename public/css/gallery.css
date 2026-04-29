@@ -1,0 +1,147 @@
+/* ── Gallery grid ── */
+.photo-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 1rem;
+}
+
+.image-grid {
+  padding: 0;
+}
+
+/* ── Card base ── */
+.photo-card {
+  position: relative;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  transition: border-color var(--duration);
+}
+
+.photo-card:hover {
+  border-color: var(--accent);
+}
+
+.photo-card--selected {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px var(--accent);
+}
+
+.photo-card__link {
+  display: flex;
+  flex-direction: column;
+  text-decoration: none;
+  color: var(--text);
+}
+
+.image-card__select {
+  position: absolute;
+  top: 0.4rem;
+  left: 0.4rem;
+  z-index: 1;
+  opacity: 0;
+  transition: opacity var(--duration);
+  cursor: pointer;
+}
+
+.image-grid--select-mode .image-card__select {
+  opacity: 1;
+}
+
+.photo-card--selected .image-card__select {
+  opacity: 1;
+}
+
+#bulk-toolbar:not([hidden]) {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.image-card__img {
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: cover;
+  display: block;
+}
+
+.image-card__date {
+  padding: 0.5rem 0.75rem;
+  font-size: var(--font-xs);
+  color: var(--text-muted);
+}
+
+.image-grid__empty {
+  text-align: center;
+  color: var(--text-muted);
+  padding: 4rem 1rem;
+}
+
+/* ── Gallery toolbar ── */
+.grid-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.5rem 1rem;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  margin: 0 0 1.5rem;
+}
+
+.gallery-content {
+  padding: 0 1rem;
+}
+
+.grid-toolbar__actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.grid-toolbar__breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.grid-toolbar__title {
+  font-size: inherit;
+  font-weight: normal;
+  margin: 0;
+}
+
+.grid-toolbar__count {
+  font-size: var(--font-sm);
+  color: var(--text-muted);
+}
+
+@media (max-width: 600px) {
+  .grid-toolbar--select-mode {
+    display: none;
+  }
+}
+
+/* ── Gallery grid mobile ── */
+@media (max-width: 600px) {
+  .photo-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.5rem;
+  }
+
+  .image-card__date {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 0.25rem 0.4rem;
+    background: var(--image-date-overlay);
+    color: #fff;
+    font-size: var(--font-xs);
+  }
+}
+
+.image-grid--select-mode .image-card__select,
+.collection-grid--select-mode .image-card__select {
+  opacity: 1;
+}
