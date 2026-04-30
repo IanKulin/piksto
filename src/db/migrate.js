@@ -6,9 +6,12 @@ export function runMigrations(db) {
   const needsMigration = cols.some((c) => c.name === "name" && c.type === "TEXT");
   if (!needsMigration) return;
 
+  console.warn("collections migration needed: re-encrypting name and slug columns");
+
   db.pragma("foreign_keys = OFF");
 
   db.transaction(() => {
+    console.info("collections migration: creating collections_new table");
     db.prepare(
       `
       CREATE TABLE collections_new (
@@ -25,6 +28,7 @@ export function runMigrations(db) {
     ).run();
 
     const rows = db.prepare("SELECT id, name, slug, created_at FROM collections").all();
+    console.info(`collections migration: encrypting ${rows.length} row(s)`);
     const insert = db.prepare(
       "INSERT INTO collections_new (id, iv_name, name_data, auth_tag_name, iv_slug, slug_data, auth_tag_slug, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)"
     );
@@ -54,6 +58,7 @@ export function runMigrations(db) {
 
     db.prepare("DROP TABLE collections").run();
     db.prepare("ALTER TABLE collections_new RENAME TO collections").run();
+    console.info("collections migration: complete");
   })();
 
   db.pragma("foreign_keys = ON");
@@ -63,6 +68,8 @@ function migrateImages(db) {
   const imgCols = db.prepare("PRAGMA table_info(images)").all();
   const needsMigration = !imgCols.some((c) => c.name === "iv_url");
   if (!needsMigration) return;
+
+  console.warn("images migration needed: adding url and comment encrypted columns");
 
   for (const col of [
     "iv_url",
@@ -74,4 +81,6 @@ function migrateImages(db) {
   ]) {
     db.prepare(`ALTER TABLE images ADD COLUMN ${col} BLOB`).run();
   }
+
+  console.info("images migration: complete");
 }
