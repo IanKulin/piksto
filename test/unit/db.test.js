@@ -111,8 +111,23 @@ describe("database module", () => {
   });
 
   test("db file is created on disk when module is loaded", async () => {
-    await import("../../src/db.js");
-    const dbPath = process.env.DB_PATH || path.join(__dirname, "../../data/piksto.db");
-    assert.ok(fs.existsSync(dbPath), "db file should exist after module load");
+    const tmpPath = path.join(__dirname, "../../data/test-unit-tmp.db");
+    process.env.ENCRYPTION_KEY = "a".repeat(64);
+    process.env.DB_PATH = tmpPath;
+    try {
+      await import("../../src/db.js");
+      assert.ok(fs.existsSync(tmpPath), "db file should exist after module load");
+    } finally {
+      delete process.env.DB_PATH;
+      try {
+        fs.unlinkSync(tmpPath);
+      } catch {}
+      try {
+        fs.unlinkSync(tmpPath + "-wal");
+      } catch {}
+      try {
+        fs.unlinkSync(tmpPath + "-shm");
+      } catch {}
+    }
   });
 });

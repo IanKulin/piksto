@@ -1,32 +1,63 @@
 import db from "./connection.js";
+import { encrypt, decrypt } from "../crypto.js";
+
+let collectionsCache = null;
+
+function encryptText(str) {
+  const { iv, ciphertext, authTag } = encrypt(Buffer.from(str, "utf8"));
+  return { iv, ciphertext, authTag };
+}
+
+function decryptText({ iv, ciphertext, authTag }) {
+  return decrypt({ iv, ciphertext, authTag }).toString("utf8");
+}
+
+function loadCache() {
+  const rows = db
+    .prepare(
+      "SELECT id, iv_name, name_data, auth_tag_name, iv_slug, slug_data, auth_tag_slug, created_at FROM collections ORDER BY created_at ASC"
+    )
+    .all();
+  collectionsCache = rows.map((row) => ({
+    id: row.id,
+    name: decryptText({ iv: row.iv_name, ciphertext: row.name_data, authTag: row.auth_tag_name }),
+    slug: decryptText({ iv: row.iv_slug, ciphertext: row.slug_data, authTag: row.auth_tag_slug }),
+    created_at: row.created_at,
+  }));
+}
+
+function ensureCache() {
+  if (collectionsCache === null) loadCache();
+}
+
+function _resetCacheForTesting() {
+  collectionsCache = null;
+}
 
 const stmts = {
-  getAllCollections: db.prepare(`
-    SELECT c.id, c.name, c.slug, c.created_at,
+  getImageCountsAndCovers: db.prepare(`
+    SELECT c.id,
       (SELECT COUNT(*) FROM image_collections ic WHERE ic.collection_id = c.id) AS image_count,
       (SELECT ic2.image_id FROM image_collections ic2 WHERE ic2.collection_id = c.id ORDER BY ic2.image_id ASC LIMIT 1) AS cover_image_id
     FROM collections c
-    ORDER BY c.created_at ASC
   `),
-  getCollectionBySlug: db.prepare("SELECT * FROM collections WHERE slug = ?"),
-  createCollection: db.prepare("INSERT INTO collections (name, slug) VALUES (?, ?)"),
+  createCollection: db.prepare(`
+    INSERT INTO collections (iv_name, name_data, auth_tag_name, iv_slug, slug_data, auth_tag_slug)
+    VALUES (?, ?, ?, ?, ?, ?)
+  `),
   deleteCollectionById: db.prepare("DELETE FROM collections WHERE id = ?"),
-  getImagesByCollectionSlug: db.prepare(`
+  getImagesByCollectionId: db.prepare(`
     SELECT i.id, i.created_at FROM images i
     JOIN image_collections ic ON ic.image_id = i.id
-    JOIN collections c ON c.id = ic.collection_id
-    WHERE c.slug = ?
+    WHERE ic.collection_id = ?
     ORDER BY i.id ASC
   `),
   addImageToCollection: db.prepare(
     "INSERT OR IGNORE INTO image_collections (image_id, collection_id) VALUES (?, ?)"
   ),
-  getCollectionsForImage: db.prepare(`
-    SELECT c.id, c.name, c.slug FROM collections c
-    JOIN image_collections ic ON ic.collection_id = c.id
-    WHERE ic.image_id = ?
-    ORDER BY c.name ASC
-  `),
+  getCollectionIdsForImage: db.prepare(
+    "SELECT collection_id FROM image_collections WHERE image_id = ?"
+  ),
   toggleCheckMembership: db.prepare(
     "SELECT 1 FROM image_collections WHERE image_id = ? AND collection_id = ?"
   ),
@@ -39,35 +70,54 @@ const stmts = {
   prevImageInCollection: db.prepare(`
     SELECT i.id FROM images i
     JOIN image_collections ic ON ic.image_id = i.id
-    JOIN collections c ON c.id = ic.collection_id
-    WHERE c.slug = ? AND i.id < ?
+    WHERE ic.collection_id = ? AND i.id < ?
     ORDER BY i.id DESC
     LIMIT 1
   `),
   nextImageInCollection: db.prepare(`
     SELECT i.id FROM images i
     JOIN image_collections ic ON ic.image_id = i.id
-    JOIN collections c ON c.id = ic.collection_id
-    WHERE c.slug = ? AND i.id > ?
+    WHERE ic.collection_id = ? AND i.id > ?
     ORDER BY i.id ASC
     LIMIT 1
   `),
 };
 
 function getAllCollections() {
-  return stmts.getAllCollections.all();
+  ensureCache();
+  const rows = stmts.getImageCountsAndCovers.all();
+  const rowsById = Object.fromEntries(rows.map((r) => [r.id, r]));
+  return collectionsCache.map((entry) => ({
+    ...entry,
+    image_count: rowsById[entry.id]?.image_count ?? 0,
+    cover_image_id: rowsById[entry.id]?.cover_image_id ?? null,
+  }));
 }
 
 function getCollectionBySlug(slug) {
-  return stmts.getCollectionBySlug.get(slug);
+  ensureCache();
+  return collectionsCache.find((c) => c.slug === slug);
 }
 
 function createCollection(name, slug) {
-  return stmts.createCollection.run(name, slug);
+  const { iv: ivName, ciphertext: nameData, authTag: authTagName } = encryptText(name);
+  const { iv: ivSlug, ciphertext: slugData, authTag: authTagSlug } = encryptText(slug);
+  const result = stmts.createCollection.run(
+    ivName,
+    nameData,
+    authTagName,
+    ivSlug,
+    slugData,
+    authTagSlug
+  );
+  loadCache();
+  return result;
 }
 
 function deleteCollectionById(id) {
-  return stmts.deleteCollectionById.run(id);
+  const result = stmts.deleteCollectionById.run(id);
+  loadCache();
+  return result;
 }
 
 function deleteManyCollectionsById(ids) {
@@ -75,10 +125,14 @@ function deleteManyCollectionsById(ids) {
   if (valid.length === 0) return;
   const placeholders = valid.map(() => "?").join(",");
   db.prepare(`DELETE FROM collections WHERE id IN (${placeholders})`).run(...valid);
+  loadCache();
 }
 
 function getImagesByCollectionSlug(slug) {
-  return stmts.getImagesByCollectionSlug.all(slug);
+  ensureCache();
+  const entry = collectionsCache.find((c) => c.slug === slug);
+  if (!entry) return [];
+  return stmts.getImagesByCollectionId.all(entry.id);
 }
 
 function addImagesToCollection(imageIds, collectionId) {
@@ -97,7 +151,13 @@ function removeImagesFromCollection(imageIds, collectionId) {
 }
 
 function getCollectionsForImage(imageId) {
-  return stmts.getCollectionsForImage.all(imageId);
+  ensureCache();
+  const rows = stmts.getCollectionIdsForImage.all(imageId);
+  return rows
+    .map((r) => collectionsCache.find((c) => c.id === r.collection_id))
+    .filter(Boolean)
+    .map(({ id, name, slug }) => ({ id, name, slug }))
+    .sort((a, b) => a.name.localeCompare(b.name));
 }
 
 function toggleImageInCollection(imageId, collectionId) {
@@ -113,8 +173,11 @@ function toggleImageInCollection(imageId, collectionId) {
 }
 
 function getAdjacentImagesInCollection(id, slug) {
-  const prev = stmts.prevImageInCollection.get(slug, id);
-  const next = stmts.nextImageInCollection.get(slug, id);
+  ensureCache();
+  const entry = collectionsCache.find((c) => c.slug === slug);
+  if (!entry) return { prevId: null, nextId: null };
+  const prev = stmts.prevImageInCollection.get(entry.id, id);
+  const next = stmts.nextImageInCollection.get(entry.id, id);
   return { prevId: prev?.id ?? null, nextId: next?.id ?? null };
 }
 
@@ -130,4 +193,5 @@ export {
   getCollectionsForImage,
   toggleImageInCollection,
   getAdjacentImagesInCollection,
+  _resetCacheForTesting,
 };

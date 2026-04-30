@@ -2,6 +2,7 @@ import Database from "better-sqlite3";
 import path from "path";
 import fs from "fs";
 import { fileURLToPath } from "url";
+import { runMigrations } from "./migrate.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -29,10 +30,14 @@ db.exec(`
   );
 
   CREATE TABLE IF NOT EXISTS collections (
-    id         INTEGER PRIMARY KEY AUTOINCREMENT,
-    name       TEXT NOT NULL UNIQUE,
-    slug       TEXT NOT NULL UNIQUE,
-    created_at DATETIME DEFAULT (datetime('now'))
+    id            INTEGER PRIMARY KEY AUTOINCREMENT,
+    iv_name       BLOB NOT NULL,
+    name_data     BLOB NOT NULL,
+    auth_tag_name BLOB NOT NULL,
+    iv_slug       BLOB NOT NULL,
+    slug_data     BLOB NOT NULL,
+    auth_tag_slug BLOB NOT NULL,
+    created_at    DATETIME DEFAULT (datetime('now'))
   );
 
   CREATE TABLE IF NOT EXISTS image_collections (
@@ -45,5 +50,7 @@ db.exec(`
   CREATE INDEX IF NOT EXISTS idx_image_collections_collection_id
     ON image_collections(collection_id);
 `);
+
+runMigrations(db);
 
 export default db;
