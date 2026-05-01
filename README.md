@@ -58,7 +58,6 @@ AI tools were used in the production of this app.
 
 I'm not expecting any, feel free to fork and use in line with GPL3. Please open an issue on GitHub for any security issues you spot though.
 
-
 ## Development
 
 ```bash
@@ -68,6 +67,7 @@ npm test # Run all tests (unit + e2e)
 node --test test/unit/crypto.test.js # Run a single unit test file
 npx playwright test test/e2e/stage3.spec.js # Run a single e2e spec
 ```
+
 E2e tests use Playwright (Chromium only, single worker to avoid SQLite race conditions). Playwright auto-starts the server if none is running, using a test encryption key.
 
 ## Architecture
