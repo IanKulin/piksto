@@ -10,7 +10,7 @@ const router = express.Router();
 
 const uploadRateLimit = rateLimit({
   windowMs: parseInt(process.env.UPLOAD_RATE_LIMIT_WINDOW_MS, 10) || 60 * 1000,
-  max: parseInt(process.env.UPLOAD_RATE_LIMIT_MAX, 10) || 20,
+  max: parseInt(process.env.UPLOAD_RATE_LIMIT_MAX, 10) || 100,
   standardHeaders: true,
   legacyHeaders: false,
   handler(_req, res) {

@@ -51,7 +51,10 @@ test.describe("Stage 3 — File Upload & Encryption Pipeline", () => {
         buffer: Buffer.from("not an image"),
       });
       await page.locator('form[action="/upload/file"] button[type="submit"]').click();
-      await expect(page.locator(".banner--error")).toContainText("Unsupported image type");
+      await expect(page.locator(".file-list__status--error")).toBeVisible();
+      await expect(page.locator(".file-list__status--error")).toContainText(
+        "Unsupported image type"
+      );
     });
 
     test("upload a file >2 MB → shows File too large error", async ({ page }) => {
@@ -64,7 +67,8 @@ test.describe("Stage 3 — File Upload & Encryption Pipeline", () => {
         buffer: oversize,
       });
       await page.locator('form[action="/upload/file"] button[type="submit"]').click();
-      await expect(page.locator(".banner--error")).toContainText("File too large");
+      await expect(page.locator(".file-list__status--error")).toBeVisible();
+      await expect(page.locator(".file-list__status--error")).toContainText("File too large");
     });
 
     test("successful upload inserts a row with non-null BLOB fields", async ({ page }) => {
@@ -105,6 +109,59 @@ test.describe("Stage 3 — File Upload & Encryption Pipeline", () => {
       expect(Buffer.from(row.iv_image).toString("hex")).not.toBe(
         Buffer.from(row.iv_thumb).toString("hex")
       );
+    });
+  });
+
+  test.describe("multi-file upload", () => {
+    test("two files selected — both upload successfully", async ({ page }) => {
+      await page.goto("/");
+      await page
+        .locator('input[type="file"][name="image"]')
+        .setInputFiles([path.join(FIXTURES, "red.jpg"), path.join(FIXTURES, "green.png")]);
+      await page.locator("#upload-btn").click();
+      await page.waitForURL("/?success=1");
+      await expect(page.locator(".banner--success")).toBeVisible();
+
+      const db = new Database(process.env.DB_PATH, { readonly: true });
+      const rows = db.prepare("SELECT id FROM images ORDER BY id DESC LIMIT 2").all();
+      db.close();
+      expect(rows.length).toBe(2);
+    });
+
+    test("three files — two valid, one oversized — partial failure", async ({ page }) => {
+      const oversize = Buffer.alloc(2 * 1024 * 1024 + 1, 0xff);
+      const redBuffer = fs.readFileSync(path.join(FIXTURES, "red.jpg"));
+      const greenBuffer = fs.readFileSync(path.join(FIXTURES, "green.png"));
+      await page.goto("/");
+      await page.locator('input[type="file"][name="image"]').setInputFiles([
+        { name: "red.jpg", mimeType: "image/jpeg", buffer: redBuffer },
+        { name: "big.jpg", mimeType: "image/jpeg", buffer: oversize },
+        { name: "green.png", mimeType: "image/png", buffer: greenBuffer },
+      ]);
+      await page.locator("#upload-btn").click();
+      await expect(page.locator(".file-list__status--error")).toBeVisible();
+      await expect(page.locator(".file-list__status--done")).toHaveCount(2);
+      await expect(page.locator("#upload-btn")).not.toBeDisabled();
+    });
+
+    test("drop multiple files — file list populated, no auto-submit", async ({ page }) => {
+      await page.goto("/");
+      const bytes1 = Array.from(fs.readFileSync(path.join(FIXTURES, "red.jpg")));
+      const bytes2 = Array.from(fs.readFileSync(path.join(FIXTURES, "blue.webp")));
+      const dataTransfer = await page.evaluateHandle(
+        ({ bytes1, bytes2 }) => {
+          const dt = new DataTransfer();
+          dt.items.add(new File([new Uint8Array(bytes1)], "red.jpg", { type: "image/jpeg" }));
+          dt.items.add(new File([new Uint8Array(bytes2)], "blue.webp", { type: "image/webp" }));
+          return dt;
+        },
+        { bytes1, bytes2 }
+      );
+      await page.locator("#drop-zone").dispatchEvent("drop", { dataTransfer });
+      await dataTransfer.dispose();
+      await expect(page.locator("#file-list")).toContainText("red.jpg");
+      await expect(page.locator("#file-list")).toContainText("blue.webp");
+      await expect(page.locator("#upload-btn")).not.toBeDisabled();
     });
   });
 

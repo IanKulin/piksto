@@ -33,8 +33,8 @@ test.describe("MIME type magic byte validation", () => {
     });
     await page.locator('form[action="/upload/file"] button[type="submit"]').click();
 
-    await expect(page.locator(".banner--error")).toBeVisible({ timeout: 10_000 });
-    await expect(page.locator(".banner--error")).toContainText("Unsupported image type");
+    await expect(page.locator(".file-list__status--error")).toBeVisible({ timeout: 10_000 });
+    await expect(page.locator(".file-list__status--error")).toContainText("Unsupported image type");
     await expect(page).not.toHaveURL(/success=1/);
     await ctx.close();
   });

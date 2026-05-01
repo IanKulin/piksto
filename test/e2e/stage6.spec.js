@@ -70,38 +70,41 @@ test.describe("Stage 6 — Drag-and-Drop & Polish", () => {
     await expect(zone).not.toHaveClass(/drop-zone--active/);
   });
 
-  // ── Successful drop submits the form ────────────────────────────────────
+  // ── Successful drop then Upload button submits ──────────────────────────
 
   test("dropping a JPEG onto the drop zone uploads successfully", async ({ page }) => {
     await dropFile(page, "red.jpg", "image/jpeg");
+    await page.locator("#upload-btn").click();
     await page.waitForURL("/?success=1", { timeout: 15_000 });
     await expect(page.locator(".banner--success")).toBeVisible();
   });
 
   test("dropping a PNG onto the drop zone uploads successfully", async ({ page }) => {
     await dropFile(page, "green.png", "image/png");
+    await page.locator("#upload-btn").click();
     await page.waitForURL("/?success=1", { timeout: 15_000 });
     await expect(page.locator(".banner--success")).toBeVisible();
   });
 
   test("dropping a WebP onto the drop zone uploads successfully", async ({ page }) => {
     await dropFile(page, "blue.webp", "image/webp");
+    await page.locator("#upload-btn").click();
     await page.waitForURL("/?success=1", { timeout: 15_000 });
     await expect(page.locator(".banner--success")).toBeVisible();
   });
 
-  // ── Non-image drop is rejected server-side ───────────────────────────────
+  // ── Non-image drop is filtered client-side ───────────────────────────────
 
   test("dropping a non-image file is rejected with unsupported type error", async ({ page }) => {
     await dropFile(page, "dummy.txt", "text/plain");
-    // Should NOT be a success banner
+    // Client-side isImage() filter silently discards it; upload button stays disabled
+    await expect(page.locator("#upload-btn")).toBeDisabled();
     await expect(page.locator(".banner--success")).not.toBeVisible();
-    await expect(page.locator(".banner--error")).toBeVisible();
   });
 
-  // ── Multiple files: only first is submitted ──────────────────────────────
+  // ── Multiple files dropped — all valid images upload ────────────────────
 
-  test("dropping multiple files submits only the first (single-field Multer)", async ({ page }) => {
+  test("dropping multiple files uploads all images", async ({ page }) => {
     await page.goto("/");
 
     const bytes1 = fixtureBytes("red.jpg");
@@ -120,7 +123,7 @@ test.describe("Stage 6 — Drag-and-Drop & Polish", () => {
     await page.locator("#drop-zone").dispatchEvent("drop", { dataTransfer });
     await dataTransfer.dispose();
 
-    // Should still succeed (first file is a valid image)
+    await page.locator("#upload-btn").click();
     await page.waitForURL("/?success=1", { timeout: 15_000 });
     await expect(page.locator(".banner--success")).toBeVisible();
   });

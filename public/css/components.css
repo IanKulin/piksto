@@ -91,6 +91,45 @@
   word-break: break-all;
 }
 
+.drop-zone__file-list {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  text-align: left;
+}
+
+.file-list__item {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 0.5rem;
+  font-size: var(--font-sm);
+  color: var(--text-muted);
+}
+
+.file-list__name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
+}
+
+.file-list__status {
+  flex-shrink: 0;
+  font-size: var(--font-xs);
+}
+
+.file-list__status--uploading {
+  color: var(--accent);
+}
+.file-list__status--done {
+  color: var(--success-text);
+}
+.file-list__status--error {
+  color: var(--error-text);
+}
+
 /* ── URL row ── */
 .url-row {
   display: flex;
