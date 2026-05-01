@@ -2,7 +2,6 @@ import Database from "better-sqlite3";
 import path from "path";
 import fs from "fs";
 import { fileURLToPath } from "url";
-import { runMigrations } from "./migrate.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -56,7 +55,5 @@ db.exec(`
   CREATE INDEX IF NOT EXISTS idx_image_collections_collection_id
     ON image_collections(collection_id);
 `);
-
-runMigrations(db);
 
 export default db;
