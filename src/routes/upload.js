@@ -5,6 +5,7 @@ import { fileTypeFromBuffer } from "file-type";
 import { storeUpload } from "../imageService.js";
 import logger from "../logger.js";
 import { assertSafeUrl, SsrfBlockedError } from "../ssrfGuard.js";
+import { resolveUrl } from "../resolvers/index.js";
 
 const router = express.Router();
 
@@ -126,89 +127,77 @@ router.post("/upload/url", uploadRateLimit, async (req, res) => {
     return res.status(400).render("upload", { error: "Invalid URL", success: null });
   }
 
-  // Strip query parameters and try that URL first to avoid lossy format conversions
-  // (e.g. ?format=webp). Fall back to the original URL if the stripped version fails.
-  let strippedUrl;
+  let resolvedUrls;
   try {
-    const parsed = new URL(url);
-    if (parsed.search) {
-      parsed.search = "";
-      strippedUrl = parsed.toString();
+    resolvedUrls = await resolveUrl(url);
+  } catch (resolveErr) {
+    logger.warn("URL upload rejected: resolver failed: %s", resolveErr.message);
+    return res.status(400).render("upload", { error: "Could not fetch image", success: null });
+  }
+
+  try {
+    for (const resolved of resolvedUrls) {
+      await assertSafeUrl(resolved);
     }
-  } catch {
-    // If URL parsing fails, proceed with original (assertSafeUrl already validated it)
+  } catch (guardErr) {
+    logger.warn("URL upload rejected: resolved URL failed SSRF check: %s", guardErr.message);
+    return res.status(400).render("upload", { error: "Invalid URL", success: null });
   }
 
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), 10000);
 
   try {
-    let response;
-    if (strippedUrl) {
-      logger.info("URL upload: trying without query params (%s)", strippedUrl);
-      // redirect: "error" is intentional — prevents redirect-based SSRF bypass (public URL -> internal address)
-      const r = await fetch(strippedUrl, { signal: controller.signal, redirect: "error" });
-      if (r.ok) {
-        response = r;
-      } else {
-        logger.info(
-          "URL upload: stripped URL returned HTTP %d, falling back to original",
-          r.status
-        );
-        await r.body?.cancel();
+    for (const resolved of resolvedUrls) {
+      // redirect: "error" is intentional — prevents redirect-based SSRF bypass
+      const response = await fetch(resolved, { signal: controller.signal, redirect: "error" });
+      if (!response.ok) {
+        logger.warn("URL upload failed: HTTP %d from remote", response.status);
+        return res.status(400).render("upload", { error: "Could not fetch image", success: null });
       }
-    }
-    if (!response) {
-      // redirect: "error" is intentional — prevents redirect-based SSRF bypass (public URL -> internal address)
-      response = await fetch(url, { signal: controller.signal, redirect: "error" });
-    }
-    if (!response.ok) {
-      logger.warn("URL upload failed: HTTP %d from remote", response.status);
-      return res.status(400).render("upload", { error: "Could not fetch image", success: null });
-    }
 
-    const contentLength = response.headers.get("content-length");
-    if (contentLength && parseInt(contentLength, 10) > MAX_UPLOAD_BYTES) {
-      logger.warn("URL upload rejected: remote content-length exceeds limit");
-      return res.status(400).render("upload", { error: "File too large", success: null });
-    }
-
-    const contentType = response.headers.get("content-type") || "";
-    const mime = contentType.split(";")[0].trim();
-    if (!ALLOWED_MIME_TYPES.includes(mime)) {
-      logger.warn("URL upload rejected: unsupported MIME type %s", mime);
-      return res.status(400).render("upload", { error: "Unsupported image type", success: null });
-    }
-
-    // Stream body into buffer while checking size
-    const reader = response.body.getReader();
-    const chunks = [];
-    let totalBytes = 0;
-
-    while (true) {
-      const { done, value } = await reader.read();
-      if (done) break;
-      totalBytes += value.byteLength;
-      if (totalBytes > MAX_UPLOAD_BYTES) {
-        reader.cancel();
+      const contentLength = response.headers.get("content-length");
+      if (contentLength && parseInt(contentLength, 10) > MAX_UPLOAD_BYTES) {
+        logger.warn("URL upload rejected: remote content-length exceeds limit");
         return res.status(400).render("upload", { error: "File too large", success: null });
       }
-      chunks.push(value);
+
+      const contentType = response.headers.get("content-type") || "";
+      const mime = contentType.split(";")[0].trim();
+      if (!ALLOWED_MIME_TYPES.includes(mime)) {
+        logger.warn("URL upload rejected: unsupported MIME type %s", mime);
+        return res.status(400).render("upload", { error: "Unsupported image type", success: null });
+      }
+
+      const reader = response.body.getReader();
+      const chunks = [];
+      let totalBytes = 0;
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        totalBytes += value.byteLength;
+        if (totalBytes > MAX_UPLOAD_BYTES) {
+          reader.cancel();
+          return res.status(400).render("upload", { error: "File too large", success: null });
+        }
+        chunks.push(value);
+      }
+
+      const imageBuffer = Buffer.concat(chunks.map((c) => Buffer.from(c)));
+
+      let verifiedMime;
+      try {
+        verifiedMime = await validateImageBuffer(imageBuffer, mime);
+      } catch (magicErr) {
+        logger.warn("URL upload rejected: %s", magicErr.message);
+        return res.status(400).render("upload", { error: "Unsupported image type", success: null });
+      }
+
+      await storeUpload(imageBuffer, verifiedMime, resolved);
+      logger.info("URL upload succeeded (%s)", verifiedMime);
     }
 
-    const imageBuffer = Buffer.concat(chunks.map((c) => Buffer.from(c)));
-
-    let verifiedMime;
-    try {
-      verifiedMime = await validateImageBuffer(imageBuffer, mime);
-    } catch (magicErr) {
-      logger.warn("URL upload rejected: %s", magicErr.message);
-      return res.status(400).render("upload", { error: "Unsupported image type", success: null });
-    }
-
-    await storeUpload(imageBuffer, verifiedMime, url);
-
-    logger.info("URL upload succeeded (%s)", verifiedMime);
     return res.redirect("/?success=1");
   } catch (err) {
     if (err.name === "AbortError") {

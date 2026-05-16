@@ -78,7 +78,9 @@ test.describe("Stage 5 — Image Detail, Download & Delete", () => {
     expect(download.suggestedFilename()).toBe(`photo-${id}.png`);
   });
 
-  test("download for a WebP image has .webp extension", async ({ page }) => {
+  test("download for a WebP image has .jpg extension (converted to JPEG on upload)", async ({
+    page,
+  }) => {
     await uploadImage(page, "blue.webp");
     const id = await getLastImageId();
     await page.goto(`/image/${id}`);
@@ -88,7 +90,7 @@ test.describe("Stage 5 — Image Detail, Download & Delete", () => {
       page.locator(`a[href="/image/${id}/download"]`).click(),
     ]);
 
-    expect(download.suggestedFilename()).toBe(`photo-${id}.webp`);
+    expect(download.suggestedFilename()).toBe(`photo-${id}.jpg`);
   });
 
   test("delete button removes image and redirects to all images", async ({ page }) => {
