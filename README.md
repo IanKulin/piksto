@@ -56,7 +56,7 @@ AI tools were used in the production of this app.
 
 ## Contributions
 
-I'm not expecting any, feel free to fork and use in line with GPL3. Please open an issue on GitHub for any security issues you spot though.
+I'm not expecting any, feel free to fork and use in line with GPL3. A GitHub issue for any security issues would be appreciated.
 
 ## Development
 
