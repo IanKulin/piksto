@@ -27,20 +27,21 @@ Use the tool at [iankulin/github.io/crypt](https://iankulin/github.io/crypt) to 
 
 Edit `.env` and set the required values if not specifying in the docker-compose:
 
-| Variable                      | Required | Description                                                                                  |
-| ----------------------------- | -------- | -------------------------------------------------------------------------------------------- |
-| `ENCRYPTION_KEY`              | Yes      | 64-character hex string (32 bytes). Generate with `npm run generate-key`.                    |
-| `SESSION_SECRET`              | Yes      | Random string for signing session cookies. Use at least 32 characters.                       |
-| `AUTH_PASSWORD_HASH`          | Yes      | bcrypt hash of your login password. Generate with `npm run hash-password <password>`.        |
-| `AUTH_USERNAME`               | No       | Login username. Defaults to `admin`.                                                         |
-| `PORT`                        | No       | Port to listen on. Defaults to `3000`.                                                       |
-| `LOG_LEVEL`                   | No       | Logging verbosity. Defaults to `info`.                                                       |
-| `MAX_UPLOAD_MB`               | No       | Maximum upload size in megabytes (decimals allowed, e.g. `0.5`). Defaults to `2`.            |
-| `UPLOAD_RATE_LIMIT_MAX`       | No       | Maximum uploads per IP per window. Defaults to `100`.                                        |
-| `UPLOAD_RATE_LIMIT_WINDOW_MS` | No       | Rate limit window in milliseconds. Defaults to `60000` (1 minute).                           |
-| `TRUST_PROXY`                 | No       | Set to `1` (or number of proxies) when running behind Nginx or similar. Defaults to `false`. |
-| `SECURE_COOKIE`               | No       | Set to `true` in production to require HTTPS for session cookies. Defaults to `true`.        |
-| `SESSION_IDLE_TIMEOUT_HOURS`  | No       | Hours of inactivity before a session is invalidated. Defaults to `24`.                       |
+| Variable                      | Required | Description                                                                                                   |
+| ----------------------------- | -------- | ------------------------------------------------------------------------------------------------------------- |
+| `ENCRYPTION_KEY`              | Yes      | 64-character hex string (32 bytes). Generate with `npm run generate-key`.                                     |
+| `SESSION_SECRET`              | Yes      | Random string for signing session cookies. Use at least 32 characters.                                        |
+| `AUTH_PASSWORD_HASH`          | Yes      | bcrypt hash of your login password. Generate with `npm run hash-password <password>`.                         |
+| `AUTH_USERNAME`               | No       | Login username. Defaults to `admin`.                                                                          |
+| `PORT`                        | No       | Port to listen on. Defaults to `3000`.                                                                        |
+| `LOG_LEVEL`                   | No       | Logging verbosity. Defaults to `info`.                                                                        |
+| `MAX_UPLOAD_MB`               | No       | Maximum upload size in megabytes (decimals allowed, e.g. `0.5`). Defaults to `2`.                             |
+| `UPLOAD_RATE_LIMIT_MAX`       | No       | Maximum uploads per IP per window. Defaults to `100`.                                                         |
+| `UPLOAD_RATE_LIMIT_WINDOW_MS` | No       | Rate limit window in milliseconds. Defaults to `60000` (1 minute).                                            |
+| `TRUST_PROXY`                 | No       | Set to `1` (or number of proxies) when running behind Nginx or similar. Defaults to `false`.                  |
+| `SECURE_COOKIE`               | No       | Set to `true` in production to require HTTPS for session cookies. Defaults to `true`.                         |
+| `SESSION_IDLE_TIMEOUT_HOURS`  | No       | Hours of inactivity before a session is invalidated. Defaults to `24`.                                        |
+| `CONVERT_WEBP_TO_JPEG`        | No       | Set to `"false"` to store WebP images as-is. Defaults to `"true"` (WebP is converted to JPEG before storage). |
 
 ## Security
 
@@ -56,7 +57,7 @@ AI tools were used in the production of this app.
 
 ## Contributions
 
-I'm not expecting any, feel free to fork and use in line with GPL3. Please open an issue on GitHub for any security issues you spot though.
+I'm not expecting any, feel free to fork and use in line with GPL3. A GitHub issue for any security issues would be appreciated.
 
 ## Development
 

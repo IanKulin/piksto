@@ -1,6 +1,7 @@
 import { encrypt, decrypt } from "./crypto.js";
 import { insertRaw, getById, updateCommentRaw } from "./db.js";
 import { generateThumbnail } from "./thumbnail.js";
+import { maybeConvertWebp } from "./webpConverter.js";
 
 function encryptNullable(str) {
   if (str == null) return { iv: null, ciphertext: null, authTag: null };
@@ -55,6 +56,7 @@ function getThumb(id) {
 }
 
 async function storeUpload(imageBuffer, mimeType, sourceUrl = null) {
+  ({ buffer: imageBuffer, mimeType } = await maybeConvertWebp(imageBuffer, mimeType));
   const thumbBuffer = await generateThumbnail(imageBuffer);
   return saveImage(mimeType, imageBuffer, thumbBuffer, sourceUrl);
 }
