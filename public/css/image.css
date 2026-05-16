@@ -74,6 +74,10 @@
     display: none;
   }
 
+  .btn--download {
+    display: none;
+  }
+
   .image-shelf {
     padding: 0.6rem 1rem;
   }
