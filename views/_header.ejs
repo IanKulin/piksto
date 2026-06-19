@@ -6,6 +6,9 @@
   <meta name="color-scheme" content="light dark">
   <meta name="robots" content="noindex">
   <title><%= locals.pageTitle ? locals.pageTitle + ' · piksto' : 'piksto' %></title>
+<% if (locals.topScriptUrl) { %>
+  <script src="<%= locals.topScriptUrl %>" referrerpolicy="no-referrer-when-downgrade"></script>
+<% } %>
   <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
   <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
   <link rel="icon" href="/favicon.ico">

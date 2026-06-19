@@ -41,6 +41,16 @@ const { version } = require("./package.json");
 const SqliteStore = createSessionStore(session.Store);
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
+// TOP_SCRIPT_URL is to allow for a Sentry type monitoring system
+const topScriptUrl = process.env.TOP_SCRIPT_URL || null;
+
+let csp = "default-src 'self'; img-src 'self' blob: data:; object-src 'none'; base-uri 'self'";
+if (topScriptUrl) {
+  // it needs to be able to send beacons
+  const scriptOrigin = new URL(topScriptUrl).origin;
+  csp += `; script-src 'self' ${scriptOrigin}; connect-src 'self' ${scriptOrigin}`;
+}
+
 const app = express();
 
 // Parse TRUST_PROXY from env (false | true | number | IP string)
@@ -59,12 +69,10 @@ if (trustProxyEnv === "false") {
 app.set("trust proxy", trustProxy);
 
 app.locals.version = version;
+app.locals.topScriptUrl = topScriptUrl;
 
 app.use((_req, res, next) => {
-  res.setHeader(
-    "Content-Security-Policy",
-    "default-src 'self'; img-src 'self' blob: data:; object-src 'none'; base-uri 'self'"
-  );
+  res.setHeader("Content-Security-Policy", csp);
   res.setHeader("X-Content-Type-Options", "nosniff");
   res.setHeader("X-Frame-Options", "DENY");
   res.setHeader("Referrer-Policy", "same-origin");
