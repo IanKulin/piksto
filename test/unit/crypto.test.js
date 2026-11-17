@@ -6,7 +6,7 @@ describe("crypto helpers", () => {
     process.env.ENCRYPTION_KEY = "a".repeat(64);
     const { encrypt, decrypt } = await import("../../src/crypto.js?v=" + Date.now());
 
-    const original = Buffer.from("hello, photo-sink!");
+    const original = Buffer.from("hello, piksto!");
     const { iv, ciphertext, authTag } = encrypt(original);
     const result = decrypt({ iv, ciphertext, authTag });
 

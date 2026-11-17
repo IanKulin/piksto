@@ -1,4 +1,4 @@
-# photo-sink — Application Specification
+# piksto — Application Specification
 
 ## Overview
 
@@ -198,7 +198,7 @@ Validation: check the `Content-Type` / detected MIME type against an allowlist:
 ## Project Structure
 
 ```
-photo-sink/
+piksto/
 ├── data/                  # SQLite DB (gitignored)
 ├── public/
 │   └── style.css

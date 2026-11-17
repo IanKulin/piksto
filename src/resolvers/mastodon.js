@@ -15,7 +15,7 @@ const mastodon = {
     try {
       const res = await fetch(apiUrl, {
         signal: controller.signal,
-        headers: { "User-Agent": "photo-sink/1.0" },
+        headers: { "User-Agent": "piksto/1.0" },
         redirect: "error",
       });
       if (!res.ok) throw new Error(`Mastodon API returned HTTP ${res.status}`);

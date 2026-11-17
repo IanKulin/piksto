@@ -1,4 +1,4 @@
-FROM node:25-alpine AS builder
+FROM node:24-alpine AS builder
 
 WORKDIR /app
 
@@ -8,7 +8,7 @@ RUN apk add --no-cache python3 make g++
 COPY package*.json ./
 RUN npm ci --omit=dev
 
-FROM node:25-alpine AS production
+FROM node:24-alpine AS production
 
 LABEL org.opencontainers.image.source=https://github.com/iankulin/piksto
 

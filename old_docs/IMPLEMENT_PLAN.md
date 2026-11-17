@@ -1,4 +1,4 @@
-# photo-sink — Implementation Plan
+# piksto — Implementation Plan
 
 Each stage ends with a testable milestone. Complete stages in order.
 
