@@ -27,14 +27,15 @@
 }
 
 .nav-link--active {
-  text-shadow: 0 0 8px color-mix(in srgb, var(--accent) 60%, transparent);
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 0.25em;
 }
 
-.nav-link--active::before {
-  content: "[";
-}
-.nav-link--active::after {
-  content: "]";
+@media (prefers-color-scheme: dark) {
+  .nav-link--active {
+    text-shadow: 0 0 8px color-mix(in srgb, var(--accent) 60%, transparent);
+  }
 }
 
 /* ── Main ── */
