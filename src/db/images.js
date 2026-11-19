@@ -6,6 +6,11 @@ const stmts = {
     VALUES (@mime_type, @iv_image, @image_data, @iv_thumb, @thumb_data, @auth_tag_image, @auth_tag_thumb, @iv_url, @url_data, @auth_tag_url, @iv_comment, @comment_data, @auth_tag_comment)
   `),
   getAll: db.prepare("SELECT id, created_at FROM images ORDER BY created_at ASC"),
+  getUncollected: db.prepare(`
+    SELECT id, created_at FROM images
+    WHERE NOT EXISTS (SELECT 1 FROM image_collections WHERE image_id = images.id)
+    ORDER BY created_at ASC
+  `),
   getById: db.prepare("SELECT * FROM images WHERE id = ?"),
   deleteById: db.prepare("DELETE FROM images WHERE id = ?"),
   prevImage: db.prepare(`
@@ -68,6 +73,10 @@ function getAllImages() {
   return stmts.getAll.all();
 }
 
+function getUncollectedImages() {
+  return stmts.getUncollected.all();
+}
+
 function getById(id) {
   return stmts.getById.get(id);
 }
@@ -99,6 +108,7 @@ export {
   updateCommentRaw,
   deleteManyById,
   getAllImages,
+  getUncollectedImages,
   getById,
   deleteById,
   getAdjacentImages,

@@ -167,6 +167,57 @@ test.describe("shared collections", () => {
     await visitor.close();
   });
 
+  test("viewer frame has prev/next, preload and no date; locked and outside ids 404", async ({
+    page,
+    browser,
+  }) => {
+    const first = await uploadBuffer(page, await exifJpeg("red"));
+    const second = await uploadBuffer(page, await exifJpeg("blue"));
+    const slug = await createCollection(page, "Share Viewer");
+    addToCollection(first, slug);
+    addToCollection(second, slug);
+    const url = await createShare(page, slug);
+
+    const visitor = await browser.newContext({ storageState: ANON });
+    const vp = await visitor.newPage();
+    await vp.goto(url);
+    await vp.locator(".image-card__link").first().click();
+    await expect(vp).toHaveURL(/\/share\/[^/]+\/view\/\d+$/);
+    await expect(vp.locator(".image-detail__img")).toHaveAttribute("src", /\/image\/\d+$/);
+    await expect(vp.locator("time")).toHaveCount(0);
+    await expect(vp.locator(".image-shelf__meta")).toHaveText("");
+    await expect(vp.locator("nav")).toHaveCount(0);
+    const link = vp.locator('link[rel="prefetch"]');
+    const hasNext = (await link.count()) === 1;
+    const nextBtn = vp.locator("a.image-shelf__nav-btn", { hasText: "Next" });
+    const prevBtn = vp.locator("a.image-shelf__nav-btn", { hasText: "Prev" });
+    // Exactly one direction is available from the first or last grid item; walk to the other.
+    if (hasNext) {
+      await nextBtn.click();
+      await expect(prevBtn).toHaveCount(1);
+      await expect(vp.locator('link[rel="prefetch"]')).toHaveCount(0);
+    } else {
+      await prevBtn.click();
+      await expect(nextBtn).toHaveCount(1);
+    }
+    await expect(vp.locator("a[download]")).toHaveAttribute("href", /\/image\/\d+$/);
+
+    const outsider = await uploadBuffer(page, await exifJpeg("green"));
+    expect((await visitor.request.get(`${url}/view/${outsider}`)).status()).toBe(404);
+    await visitor.close();
+  });
+
+  test("viewer page respects the password lock", async ({ page, browser }) => {
+    const { imageId, slug } = await setup(page, "Share Viewer Lock");
+    const url = await createShare(page, slug, { password: "hunter2" });
+    const visitor = await browser.newContext({ storageState: ANON });
+    const vp = await visitor.newPage();
+    await vp.goto(`${url}/view/${imageId}`);
+    await expect(vp.locator('input[name="password"]')).toBeVisible();
+    await expect(vp.locator(".image-detail__img")).toHaveCount(0);
+    await visitor.close();
+  });
+
   test("expired share looks identical to an unknown token", async ({ page, browser }) => {
     const { slug } = await setup(page, "Share Expired");
     const url = await createShare(page, slug);

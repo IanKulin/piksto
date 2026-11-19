@@ -1,0 +1,42 @@
+<%- include('_header-public', { pageTitle: collectionName, mainClass: 'main--image-view' }) %>
+
+<div id="nav-data" data-prev-url="<%= prevUrl || '' %>" data-next-url="<%= nextUrl || '' %>" hidden></div>
+<% if (nextImageSrc) { %>
+<link rel="prefetch" as="image" href="<%= nextImageSrc %>">
+<% } %>
+
+    <div class="image-detail">
+      <a href="<%= imageSrc %>" target="_blank" rel="noopener noreferrer" class="image-detail__link" title="Open in new tab">
+        <img src="<%= imageSrc %>" alt="Shared image" class="image-detail__img">
+      </a>
+    </div>
+
+    <div class="image-shelf">
+      <div class="image-shelf__back">
+        <a href="<%= backUrl %>" class="back-link">&#8592; <%= collectionName %></a>
+      </div>
+
+      <span class="image-shelf__meta"></span>
+
+      <div class="image-shelf__nav">
+        <% if (prevUrl) { %>
+        <a href="<%= prevUrl %>" class="btn btn--small btn--secondary image-shelf__nav-btn">&#8592; Prev</a>
+        <% } else { %>
+        <button class="btn btn--small btn--secondary image-shelf__nav-btn image-shelf__nav-btn--disabled" disabled>&#8592; Prev</button>
+        <% } %>
+        <% if (nextUrl) { %>
+        <a href="<%= nextUrl %>" class="btn btn--small btn--secondary image-shelf__nav-btn">Next &#8594;</a>
+        <% } else { %>
+        <button class="btn btn--small btn--secondary image-shelf__nav-btn image-shelf__nav-btn--disabled" disabled>Next &#8594;</button>
+        <% } %>
+      </div>
+
+      <div class="image-shelf__actions">
+        <a href="<%= imageSrc %>" download class="btn btn--small btn--download">Download</a>
+      </div>
+    </div>
+
+<script src="/image-detail.js" defer></script>
+</main>
+</body>
+</html>

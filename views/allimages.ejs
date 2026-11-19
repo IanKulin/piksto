@@ -5,6 +5,10 @@
 <% } %>
 <h1 class="sr-only">All Images</h1>
 <div class="grid-toolbar" id="grid-toolbar">
+  <nav class="grid-toolbar__filters" aria-label="Filter images">
+    <a href="/allimages" data-filter="all" class="grid-toolbar__filter<%= uncollected ? '' : ' grid-toolbar__filter--active' %>"<%- uncollected ? '' : ' aria-current="page"' %>>All</a>
+    <a href="/allimages?collection=none" data-filter="none" class="grid-toolbar__filter<%= uncollected ? ' grid-toolbar__filter--active' : '' %>"<%- uncollected ? ' aria-current="page"' : '' %>>No collection</a>
+  </nav>
   <span class="grid-toolbar__count" id="grid-count">
     <%= images.length %> <%= images.length === 1 ? 'image' : 'images' %>
   </span>
@@ -17,7 +21,7 @@
 
 <div class="gallery-content">
     <% if (images.length === 0) { %>
-    <p class="image-grid__empty">No images yet. <a href="/">Upload one!</a></p>
+    <p class="image-grid__empty"><% if (uncollected) { %>Every image is in a collection.<% } else { %>No images yet. <a href="/">Upload one!</a><% } %></p>
     <% } else { %>
     <div class="photo-grid image-grid" id="image-grid">
       <% images.forEach(function(img) { %>
@@ -34,7 +38,9 @@
     </div>
     <% } %>
 
-    <form id="bulk-delete-form" action="/allimages/delete" method="post"></form>
+    <form id="bulk-delete-form" action="/allimages/delete" method="post">
+      <% if (uncollected) { %><input type="hidden" name="collection" value="none"><% } %>
+    </form>
 </div>
 
 <div class="modal-backdrop" id="bulk-modal" role="dialog" aria-modal="true" aria-labelledby="bulk-modal-msg" hidden>

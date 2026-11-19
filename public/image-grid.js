@@ -168,7 +168,7 @@ confirmBtn?.addEventListener("click", () => {
     modal.hidden = true;
     return;
   }
-  form.innerHTML = "";
+  form.querySelectorAll('input[name="ids"]').forEach((el) => el.remove());
   ids.forEach((id) => {
     const input = document.createElement("input");
     input.type = "hidden";

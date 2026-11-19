@@ -98,6 +98,22 @@ router.post(
   }
 );
 
+router.get("/:token/view/:id", loadShare(), (req, res) => {
+  const ids = getImagesByCollectionId(req.collection.id).map((img) => img.id);
+  const index = ids.indexOf(Number(req.params.id));
+  const base = `/share/${req.params.token}`;
+  const viewUrl = (id) => (id ? `${base}/view/${id}` : null);
+  res.render("share-image", {
+    id: req.params.id,
+    collectionName: req.collection.name,
+    backUrl: base,
+    imageSrc: `${base}/image/${req.params.id}`,
+    prevUrl: viewUrl(ids[index - 1]),
+    nextUrl: viewUrl(ids[index + 1]),
+    nextImageSrc: ids[index + 1] ? `${base}/image/${ids[index + 1]}` : null,
+  });
+});
+
 router.get("/:token/image/:id/thumb.jpg", loadShare({ asset: true }), (req, res) => {
   const result = getThumb(req.params.id);
   if (!result) return notFound(res);

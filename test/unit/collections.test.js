@@ -19,6 +19,8 @@ const {
   _resetCacheForTesting,
 } = await import("../../src/db/collections.js");
 
+const { getUncollectedImages } = await import("../../src/db/images.js");
+
 const { default: db } = await import("../../src/db/connection.js");
 
 function insertImage() {
@@ -172,5 +174,16 @@ describe("collections db functions", () => {
     const adj3 = getAdjacentImagesInCollection(id3, "adjacent");
     assert.equal(adj3.prevId, id2);
     assert.equal(adj3.nextId, null);
+  });
+
+  test("getUncollectedImages — excludes images in any collection", () => {
+    createCollection("Uncollected Test", "uncollected-test");
+    const col = getCollectionBySlug("uncollected-test");
+    const inCol = insertImage();
+    const loose = insertImage();
+    addImagesToCollection([inCol], col.id);
+    const ids = getUncollectedImages().map((r) => r.id);
+    assert.ok(ids.includes(loose));
+    assert.ok(!ids.includes(inCol));
   });
 });

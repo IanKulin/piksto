@@ -15,7 +15,7 @@
 <div class="photo-grid image-grid">
   <% imageIds.forEach(function(id) { %>
   <div class="photo-card image-card">
-    <a href="/share/<%= token %>/image/<%= id %>" class="photo-card__link image-card__link">
+    <a href="/share/<%= token %>/view/<%= id %>" class="photo-card__link image-card__link">
       <img src="/share/<%= token %>/image/<%= id %>/thumb.jpg" alt="Shared image" class="image-card__img" loading="lazy">
     </a>
   </div>

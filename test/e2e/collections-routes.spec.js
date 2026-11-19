@@ -270,3 +270,63 @@ test.describe("POST /collections/:slug/delete — permanently delete images from
     expect(thumbRes.status()).toBe(200);
   });
 });
+
+test.describe("All images — no collection filter", () => {
+  test("?collection=none hides images that are in a collection", async ({ page, request }) => {
+    const colName = `NoColl-${Date.now()}`;
+    await createCollection(page, colName);
+    await uploadImage(page, "red.jpg");
+    const collectedId = await getLastImageId();
+    const colsRes = await request.get("/api/collections");
+    const col = (await colsRes.json()).find((c) => c.name === colName);
+    await request.post(`/api/image/${collectedId}/collections/${col.id}/toggle`);
+    await uploadImage(page, "green.png");
+    const looseId = await getLastImageId();
+
+    await page.goto("/allimages?collection=none");
+    await expect(page.locator(`.image-card[data-id="${looseId}"]`)).toBeVisible();
+    await expect(page.locator(`.image-card[data-id="${collectedId}"]`)).toHaveCount(0);
+
+    await page.goto("/allimages");
+    await expect(page.locator(`.image-card[data-id="${collectedId}"]`)).toBeVisible();
+  });
+
+  test("filter choice persists via the All Images nav link", async ({ page }) => {
+    await page.goto("/allimages");
+    await page.locator('.grid-toolbar__filter[data-filter="none"]').click();
+    await page.waitForURL(/collection=none/);
+
+    await page.goto("/collections");
+    await expect(page.locator('.site-nav a[href="/allimages?collection=none"]')).toBeVisible();
+
+    await page.goto("/allimages?collection=none");
+    await page.locator('.grid-toolbar__filter[data-filter="all"]').click();
+    await page.waitForURL(/\/allimages$/);
+    await page.goto("/collections");
+    await expect(page.locator('.site-nav a[href="/allimages"]')).toBeVisible();
+  });
+
+  test("bulk delete from the filtered view stays in the filtered view", async ({ page }) => {
+    await uploadImage(page, "red.jpg");
+    const id = await getLastImageId();
+
+    await page.goto("/allimages?collection=none");
+    await page.locator("#grid-select-btn").click();
+    await page.locator(`.image-card[data-id="${id}"] .image-card__checkbox`).check();
+    await page.locator("#grid-toolbar-actions .btn--danger").click();
+    await page.locator("#bulk-confirm-btn").click();
+    await page.waitForURL(/\/allimages\?collection=none$/);
+  });
+
+  test("bulk delete from the unfiltered view stays unfiltered", async ({ page }) => {
+    await uploadImage(page, "red.jpg");
+    const id = await getLastImageId();
+
+    await page.goto("/allimages");
+    await page.locator("#grid-select-btn").click();
+    await page.locator(`.image-card[data-id="${id}"] .image-card__checkbox`).check();
+    await page.locator("#grid-toolbar-actions .btn--danger").click();
+    await page.locator("#bulk-confirm-btn").click();
+    await page.waitForURL(/\/allimages$/);
+  });
+});

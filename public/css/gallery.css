@@ -111,9 +111,27 @@
   margin: 0;
 }
 
+.grid-toolbar__filters {
+  display: flex;
+  gap: 0.75rem;
+  margin-right: auto;
+}
+
+.grid-toolbar__filter {
+  font-size: var(--font-sm);
+  color: var(--text-muted);
+  text-decoration: none;
+}
+
+.grid-toolbar__filter--active {
+  color: inherit;
+  font-weight: 600;
+}
+
 .grid-toolbar__count {
   font-size: var(--font-sm);
   color: var(--text-muted);
+  margin-right: 1rem;
 }
 
 @media (max-width: 600px) {
