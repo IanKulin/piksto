@@ -90,7 +90,7 @@ src/
   sessionStore.js   express-session store backed by sessionDb
   shareService.js   Share tokens, expiry, passwords, EXIF stripping
   imageService.js   Orchestrates encrypt/decrypt and thumbnail generation
-  thumbnail.js      Sharp — 300×300 JPEG thumbnail generation
+  thumbnail.js      Sharp — 400×400 square-cropped JPEG thumbnail generation
   ssrfGuard.js      Blocks URL uploads to private/internal addresses
   mimeTypes.js      MIME type → file extension map
   slugify.js        Converts collection names to URL-safe slugs
