@@ -52,6 +52,20 @@ describe("thumbnail generation", () => {
     assert.ok(meta.width <= 300);
   });
 
+  test("applies EXIF orientation", async () => {
+    // Stored as 200x100 landscape with orientation 6 (rotate 90° CW) => displays as 100x200 portrait
+    const input = await sharp({
+      create: { width: 200, height: 100, channels: 3, background: { r: 100, g: 150, b: 200 } },
+    })
+      .withMetadata({ orientation: 6 })
+      .jpeg()
+      .toBuffer();
+
+    const result = await generateThumbnail(input);
+    const meta = await sharp(result).metadata();
+    assert.ok(meta.height > meta.width, `expected portrait, got ${meta.width}x${meta.height}`);
+  });
+
   test("rejects invalid input buffer", async () => {
     await assert.rejects(() => generateThumbnail(Buffer.from("not an image")));
   });
