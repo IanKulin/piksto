@@ -54,6 +54,19 @@ db.exec(`
 
   CREATE INDEX IF NOT EXISTS idx_image_collections_collection_id
     ON image_collections(collection_id);
+
+  CREATE TABLE IF NOT EXISTS shares (
+    id             INTEGER PRIMARY KEY AUTOINCREMENT,
+    collection_id  INTEGER NOT NULL REFERENCES collections(id) ON DELETE CASCADE,
+    token_hash     TEXT    NOT NULL UNIQUE,
+    password_hash  TEXT,
+    strip_metadata INTEGER NOT NULL DEFAULT 1,
+    expires_at     TEXT    NOT NULL,
+    created_at     DATETIME NOT NULL DEFAULT (datetime('now'))
+  );
+
+  CREATE INDEX IF NOT EXISTS idx_shares_collection_id
+    ON shares(collection_id);
 `);
 
 export default db;

@@ -99,6 +99,15 @@ function getCollectionBySlug(slug) {
   return collectionsCache.find((c) => c.slug === slug);
 }
 
+function getCollectionById(id) {
+  ensureCache();
+  return collectionsCache.find((c) => c.id === id);
+}
+
+function getImagesByCollectionId(collectionId) {
+  return stmts.getImagesByCollectionId.all(collectionId);
+}
+
 function createCollection(name, slug) {
   const { iv: ivName, ciphertext: nameData, authTag: authTagName } = encryptText(name);
   const { iv: ivSlug, ciphertext: slugData, authTag: authTagSlug } = encryptText(slug);
@@ -184,6 +193,8 @@ function getAdjacentImagesInCollection(id, slug) {
 export {
   getAllCollections,
   getCollectionBySlug,
+  getCollectionById,
+  getImagesByCollectionId,
   createCollection,
   deleteCollectionById,
   deleteManyCollectionsById,

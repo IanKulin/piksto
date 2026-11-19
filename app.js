@@ -15,6 +15,7 @@ import collectionsRouter from "./src/routes/collections.js";
 import imageRouter from "./src/routes/image.js";
 import healthRouter from "./src/routes/health.js";
 import apiRouter from "./src/routes/api.js";
+import shareRouter from "./src/routes/share.js";
 
 // Validate ENCRYPTION_KEY at startup
 // console.error is used here intentionally: logger relies on a dynamic import
@@ -96,6 +97,8 @@ app.use(
 
 app.use("/", healthRouter);
 app.use("/", authRouter);
+// Public: must precede the requireAuth mount at "/" below.
+app.use("/share", shareRouter);
 app.use("/api", requireAuth, apiRouter);
 app.use("/", requireAuth, uploadRouter);
 app.get("/gallery", (_req, res) => res.redirect(301, "/allimages"));
@@ -104,14 +107,19 @@ app.use("/collections", requireAuth, collectionsRouter);
 app.use("/image", requireAuth, imageRouter);
 
 // 404 handler
-app.use((_req, res) => {
-  res.status(404).render("error", { message: "Page not found." });
+app.use((req, res) => {
+  res
+    .status(404)
+    .render("error", { message: "Page not found.", isPublic: !req.session?.authenticated });
 });
 
 // 500 handler
-app.use((err, _req, res, _next) => {
+app.use((err, req, res, _next) => {
   logger.error(err.stack || err.message || String(err));
-  res.status(500).render("error", { message: "An unexpected error occurred." });
+  res.status(500).render("error", {
+    message: "An unexpected error occurred.",
+    isPublic: !req.session?.authenticated,
+  });
 });
 
 export default app;

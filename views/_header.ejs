@@ -1,24 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="color-scheme" content="light dark">
-  <meta name="robots" content="noindex">
-  <title><%= locals.pageTitle ? locals.pageTitle + ' · piksto' : 'piksto' %></title>
-<% if (locals.topScriptUrl) { %>
-  <script src="<%= locals.topScriptUrl %>" referrerpolicy="no-referrer-when-downgrade"></script>
-<% } %>
-  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
-  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
-  <link rel="icon" href="/favicon.ico">
-  <link rel="stylesheet" href="/css/base.css">
-  <link rel="stylesheet" href="/css/layout.css">
-  <link rel="stylesheet" href="/css/components.css">
-  <link rel="stylesheet" href="/css/gallery.css">
-  <link rel="stylesheet" href="/css/image.css">
-</head>
-<body>
+<%- include('_head') %>
   <header class="site-header">
     <a href="/" class="site-title">piksto</a>
     <nav class="site-nav">
@@ -26,7 +6,6 @@
       <a href="/allimages" class="nav-link<%= locals.page === 'allimages' ? ' nav-link--active' : '' %>">All Images</a>
       <a href="/collections" class="nav-link<%= locals.page === 'collections' ? ' nav-link--active' : '' %>">Collections</a>
     </nav>
-    <% if (locals.user) { %>
     <div class="user-menu" id="user-menu">
       <button class="user-menu__trigger" id="user-menu-trigger" aria-haspopup="true" aria-expanded="false" aria-label="Account menu">
         &#128100;
@@ -39,21 +18,17 @@
         <span class="user-menu__version">v <%= version %></span>
       </div>
     </div>
-    <% } %>
   </header>
 
   <%# Profile panel — shown above tab bar when profile tab is active %>
-  <% if (locals.user) { %>
   <div class="profile-panel" id="profile-panel" hidden>
     <form method="POST" action="/logout">
       <button type="submit" class="profile-panel__item">Sign out</button>
     </form>
     <span class="profile-panel__version">v <%= version %></span>
   </div>
-  <% } %>
 
   <!-- Mobile bottom tab bar (hidden on desktop via CSS) -->
-  <% if (locals.user) { %>
   <nav class="bottom-tab-bar" aria-label="Main navigation" id="bottom-tab-bar">
     <a href="/" class="bottom-tab<%= locals.page === 'upload' ? ' bottom-tab--active' : '' %>">
       <span class="bottom-tab__icon" aria-hidden="true">&#8679;</span>
@@ -77,6 +52,5 @@
     <button class="bottom-tab-bar__select-cancel btn btn--small" id="mobile-select-cancel" type="button">Cancel</button>
     <button class="bottom-tab-bar__select-delete btn btn--small btn--danger" id="mobile-select-delete" type="button">Delete</button>
   </div>
-  <% } %>
-
+  
   <main<% if (locals.mainClass) { %> class="<%= locals.mainClass %>"<% } %>>

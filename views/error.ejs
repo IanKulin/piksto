@@ -1,12 +1,12 @@
-<%- include('_header', { pageTitle: 'Error' }) %>
+<%- include(locals.isPublic ? '_header-public' : '_header', { pageTitle: 'Error' }) %>
 
     <div class="card">
       <h1>Something went wrong</h1>
       <p class="banner banner--error" role="alert"><%= locals.message || 'An unexpected error occurred.' %></p>
-      <a href="/">Go home</a>
+      <a href="<%= locals.isPublic ? '/login' : '/' %>">Go home</a>
     </div>
 
-  <script src="/menu.js" defer></script>
+  <% if (!locals.isPublic) { %><script src="/menu.js" defer></script><% } %>
 </main>
 </body>
 </html>

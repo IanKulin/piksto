@@ -9,6 +9,7 @@
     <%= images.length %> <%= images.length === 1 ? 'image' : 'images' %>
   </span>
   <div class="grid-toolbar__actions" id="grid-toolbar-actions">
+    <button class="btn btn--small btn--secondary" id="share-open-btn" type="button">Share</button>
     <% if (images.length > 0) { %>
     <button class="btn btn--small btn--secondary" id="grid-select-btn" type="button">Select</button>
     <% } %>
@@ -56,10 +57,72 @@
   </div>
 </div>
 
+<div class="modal-backdrop" id="share-modal" role="dialog" aria-modal="true" aria-labelledby="share-modal-title"<%= openShareModal ? '' : ' hidden' %>>
+  <div class="modal modal--form share-modal">
+    <h2 class="modal__title" id="share-modal-title">Share collection</h2>
+
+    <% if (shareError) { %>
+    <div class="banner banner--error" role="alert"><%= shareError %></div>
+    <% } %>
+
+    <% if (newShareUrl) { %>
+    <div class="share-new" id="share-new">
+      <p class="share-new__note">Your new link. This link won't be shown again.</p>
+      <input type="text" class="form-input" id="share-new-url" value="<%= newShareUrl %>" readonly>
+      <button type="button" class="btn btn--small" id="share-copy-btn">Copy</button>
+    </div>
+    <% } %>
+
+    <% if (shares.length > 0) { %>
+    <ul class="share-list">
+      <% shares.forEach(function(s) { %>
+      <li class="share-list__item">
+        <div class="share-list__info">
+          <span>Created <%= s.created_at %> UTC</span>
+          <span><% if (s.expired) { %><strong>Expired</strong> <% } else { %>Expires <% } %><%= s.expires_at %></span>
+          <span class="share-list__badges">
+            <% if (s.has_password) { %><span class="share-badge">Password protected</span><% } %>
+            <% if (s.strip_metadata) { %><span class="share-badge">Metadata stripped</span><% } %>
+          </span>
+        </div>
+        <form method="post" action="/collections/<%= collection.slug %>/shares/<%= s.id %>/delete">
+          <button type="submit" class="btn btn--small btn--danger">Stop sharing</button>
+        </form>
+      </li>
+      <% }); %>
+    </ul>
+    <% } else { %>
+    <p class="share-empty">This collection isn't shared.</p>
+    <% } %>
+
+    <form method="post" action="/collections/<%= collection.slug %>/shares" class="modal__form-body" id="share-create-form">
+      <div class="form-group">
+        <label for="share-password" class="form-label">Password (optional)</label>
+        <input type="password" id="share-password" name="password" class="form-input" autocomplete="new-password">
+      </div>
+      <div class="form-group">
+        <label for="share-expiry" class="form-label">Expires after</label>
+        <select id="share-expiry" name="expiry" class="form-input">
+          <option value="1h">1 hour</option>
+          <option value="1d" selected>1 day</option>
+          <option value="7d">7 days</option>
+          <option value="14d">14 days</option>
+        </select>
+      </div>
+      <label class="share-checkbox">
+        <input type="checkbox" name="strip_metadata" checked> Strip metadata (EXIF)
+      </label>
+      <button type="submit" class="btn modal__submit" id="share-create-btn">Create link</button>
+      <button type="button" class="btn modal__cancel" id="share-close-btn">Close</button>
+    </form>
+  </div>
+</div>
+
 <%- include('_add-to-collection-modal') %>
 
 <script src="/add-to-collection.js" defer></script>
 <script src="/collection-detail.js" defer></script>
+<script src="/share-modal.js" defer></script>
   <script src="/menu.js" defer></script>
 </main>
 </body>

@@ -9,13 +9,33 @@ import {
   deleteManyById,
   getAdjacentImagesInCollection,
   getById,
+  getSharesForCollection,
+  deleteShareById,
 } from "../db.js";
+import { createShare, EXPIRY_PRESETS } from "../shareService.js";
 import { slugify } from "../slugify.js";
 import logger from "../logger.js";
 import { MIME_TO_EXT } from "../mimeTypes.js";
 import { safeRedirect } from "../redirect.js";
 
 const router = express.Router();
+
+function renderCollectionDetail(res, collection, extra = {}) {
+  const now = Date.now();
+  const shares = getSharesForCollection(collection.id).map((s) => ({
+    ...s,
+    expired: now > Date.parse(s.expires_at),
+  }));
+  res.render("collection-detail", {
+    collection,
+    images: getImagesByCollectionSlug(collection.slug),
+    shares,
+    newShareUrl: null,
+    shareError: null,
+    openShareModal: false,
+    ...extra,
+  });
+}
 
 router.get("/", (_req, res) => {
   const collections = getAllCollections();
@@ -103,8 +123,51 @@ router.get("/:slug/image/:id", (req, res, next) => {
 router.get("/:slug", (req, res, next) => {
   const collection = getCollectionBySlug(req.params.slug);
   if (!collection) return next();
-  const images = getImagesByCollectionSlug(req.params.slug);
-  res.render("collection-detail", { collection, images });
+  renderCollectionDetail(res, collection, { openShareModal: req.query.shares === "1" });
+});
+
+router.post("/:slug/shares", async (req, res, next) => {
+  const collection = getCollectionBySlug(req.params.slug);
+  if (!collection) return next();
+
+  const expiryPreset = String(req.body.expiry || "");
+  if (!Object.hasOwn(EXPIRY_PRESETS, expiryPreset)) {
+    res.status(400);
+    return renderCollectionDetail(res, collection, {
+      shareError: "Choose a valid expiry.",
+      openShareModal: true,
+    });
+  }
+
+  const hasPassword = Boolean(req.body.password);
+  const stripMetadata = req.body.strip_metadata === "on";
+  const { id, token, expiresAt } = await createShare(collection, {
+    password: req.body.password,
+    expiryPreset,
+    stripMetadata,
+  });
+  logger.info(
+    "Share created: shareId=%s collection=%s expires=%s hasPassword=%s stripMetadata=%s",
+    id,
+    collection.slug,
+    expiresAt,
+    hasPassword,
+    stripMetadata
+  );
+  renderCollectionDetail(res, collection, {
+    newShareUrl: `${req.protocol}://${req.get("host")}/share/${token}`,
+    openShareModal: true,
+  });
+});
+
+router.post("/:slug/shares/:id/delete", (req, res, next) => {
+  const collection = getCollectionBySlug(req.params.slug);
+  if (!collection) return next();
+  const shareId = Number(req.params.id);
+  if (Number.isInteger(shareId) && deleteShareById(shareId, collection.id)) {
+    logger.info("Share revoked: shareId=%s collection=%s", shareId, collection.slug);
+  }
+  res.redirect(`/collections/${collection.slug}?shares=1`);
 });
 
 router.post("/:slug/remove", (req, res, next) => {

@@ -84,10 +84,11 @@ src/
     connection.js   Opens and exports the better-sqlite3 connection
     images.js       Image CRUD queries
     collections.js  Collection CRUD queries and image↔collection joins
-    migrate.js      Schema migrations (runs at startup)
+    shares.js       Share link queries
     index.js        Re-exports all db functions
   sessionDb.js      SQLite — sessions database
   sessionStore.js   express-session store backed by sessionDb
+  shareService.js   Share tokens, expiry, passwords, EXIF stripping
   imageService.js   Orchestrates encrypt/decrypt and thumbnail generation
   thumbnail.js      Sharp — 300×300 JPEG thumbnail generation
   ssrfGuard.js      Blocks URL uploads to private/internal addresses
@@ -107,12 +108,18 @@ src/
                     POST /image/:id/delete
     collections.js  GET /collections, POST /collections, POST /collections/delete,
                     GET /collections/:slug, GET /collections/:slug/image/:id,
-                    POST /collections/:slug/remove, POST /collections/:slug/delete
+                    POST /collections/:slug/remove, POST /collections/:slug/delete,
+                    POST /collections/:slug/shares, POST /collections/:slug/shares/:id/delete
+    share.js        Public (unauthenticated): GET /share/:token, POST /share/:token/unlock,
+                    GET /share/:token/image/:id, GET /share/:token/image/:id/thumb.jpg
     api.js          GET /api/collections, GET /api/image/:id/collections,
                     POST /api/image/:id/collections/:collectionId/toggle
 
 views/
-  _header.ejs                  Shared page header partial
+  _head.ejs                    Shared <head> and opening <body>
+  _header.ejs                  Authenticated page header (nav, user menu)
+  _header-public.ejs           Bare header for login, share and anonymous error pages
+  share.ejs, share-password.ejs, share-not-found.ejs  Public share views
   _add-to-collection-modal.ejs Modal for adding an image to a collection
   login.ejs
   upload.ejs

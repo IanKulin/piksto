@@ -1,0 +1,27 @@
+<%- include('_header-public', { pageTitle: collectionName }) %>
+
+<div class="grid-toolbar">
+  <div class="grid-toolbar__breadcrumb">
+    <h1 class="grid-toolbar__title"><%= collectionName %></h1>
+  </div>
+  <span class="grid-toolbar__count">
+    <%= imageIds.length %> <%= imageIds.length === 1 ? 'image' : 'images' %>
+  </span>
+</div>
+
+<% if (imageIds.length === 0) { %>
+<p class="image-grid__empty">No images in this collection.</p>
+<% } else { %>
+<div class="photo-grid image-grid">
+  <% imageIds.forEach(function(id) { %>
+  <div class="photo-card image-card">
+    <a href="/share/<%= token %>/image/<%= id %>" class="photo-card__link image-card__link">
+      <img src="/share/<%= token %>/image/<%= id %>/thumb.jpg" alt="Shared image" class="image-card__img" loading="lazy">
+    </a>
+  </div>
+  <% }); %>
+</div>
+<% } %>
+</main>
+</body>
+</html>
